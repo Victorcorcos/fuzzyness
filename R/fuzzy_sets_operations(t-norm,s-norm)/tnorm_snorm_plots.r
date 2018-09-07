@@ -135,6 +135,10 @@ get_y <- function (x, a, m, b) {
   result
 }
 
+# a = c(2, 2)
+# length(a[0])    => 0
+# a[1], a[2]      => Normal values
+# a[3], a[4], ... => NA values
 cast <- function (value) {
   if (is.na(value) || length(value) == 0) { # when the first or out of bounds index is requested
     return(0)
@@ -143,13 +147,12 @@ cast <- function (value) {
   }
 }
 
-
 # ============== Main ============== #
 fuzzy_set_A_domain = c(0:100)/10
-fuzzy_set_A_image = calculate_image(fuzzy_set_A_domain, 1.0, 3.5, 6.0) # a = 1.0, m = 3.5, b = 6.0
+fuzzy_set_A_image = calculate_image(fuzzy_set_A_domain, a = 1.0, m = 3.5, b = 6.0) # a = 1.0, m = 3.5, b = 6.0
 
 fuzzy_set_B_domain = c(0:100)/10
-fuzzy_set_B_image  = calculate_image(fuzzy_set_B_domain, 3.0, 5.0, 7.0) # a = 3.0, m = 5.5, b = 7.0
+fuzzy_set_B_image  = calculate_image(fuzzy_set_B_domain, a = 3.0, m = 5.5, b = 7.0) # a = 3.0, m = 5.5, b = 7.0
 
 
 
@@ -175,12 +178,12 @@ fuzzy_set_B_image  = calculate_image(fuzzy_set_B_domain, 3.0, 5.0, 7.0) # a = 3.
 # 2. T-CONORMAS (união)
 # Máximo: max(x, y)
 # Soma algébrica (probabilística): x + y - x*y
-# Soma limitada (Likasiewicz): min(1, x+y)
+# Soma limitada (Lukasiewicz): min(1, x+y)
 # União drástica: x se y=0; y se x=0; 1 c.c
 #
 ################################################
 
-#==================== R REMINDERS ====================
+###################### R REMINDERS ###################### 
 #
 #
 # plot(fuzzy_set_B_domain, fuzzy_set_B_image, type = 'l')
