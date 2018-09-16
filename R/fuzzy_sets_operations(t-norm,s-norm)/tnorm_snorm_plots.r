@@ -115,7 +115,6 @@ uniao_drastica <- function (x, y) {
   }
 }
 
-
 triangular_membership_function <- function (x, a, m, b) {
   if (x >= a && x < m) {
     y = (x - a) / (m - a)
