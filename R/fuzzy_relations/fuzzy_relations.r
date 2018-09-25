@@ -89,61 +89,61 @@ uniao_drastica <- function (x, y) {
   }
 }
 
-# =========================================
-t_norms <- function () {
-  domain = seq(0, 10, 0.1)
+# # =========================================
+# t_norms <- function () {
+#   domain = seq(0, 10, 0.1)
 
-  par(mfrow = c(3,3))
-  print_fuzzy_sets()
-  plot(domain, apply_t_norm('minimo', fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'green', xlim = c(0, 10), ylim = c(0, 1), main = 'T-norm (Minimo)', xlab = 'Domain', ylab = 'Membership Functions')
-  plot(domain, apply_t_norm('produto', fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'lightskyblue', xlim = c(0, 10), ylim = c(0, 1), main = 'T-norm (Produto Algebrico)', xlab = 'Domain', ylab = 'Membership Functions')
-  plot(domain, apply_t_norm('diferenca limitada', fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'orange2', xlim = c(0, 10), ylim = c(0, 1), main = 'T-norm (Lukasiewics)', xlab = 'Domain', ylab = 'Membership Functions')
-  plot(domain, apply_t_norm('interseccao drastica', fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'yellow3', xlim = c(0, 10), ylim = c(0, 1), main = 'T-norm (Interseccao Drastica)', xlab = 'Domain', ylab = 'Membership Functions')
-}
+#   par(mfrow = c(3,3))
+#   print_fuzzy_sets()
+#   plot(domain, apply_t_norm('minimo', fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'green', xlim = c(0, 10), ylim = c(0, 1), main = 'T-norm (Minimo)', xlab = 'Domain', ylab = 'Membership Functions')
+#   plot(domain, apply_t_norm('produto', fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'lightskyblue', xlim = c(0, 10), ylim = c(0, 1), main = 'T-norm (Produto Algebrico)', xlab = 'Domain', ylab = 'Membership Functions')
+#   plot(domain, apply_t_norm('diferenca limitada', fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'orange2', xlim = c(0, 10), ylim = c(0, 1), main = 'T-norm (Lukasiewics)', xlab = 'Domain', ylab = 'Membership Functions')
+#   plot(domain, apply_t_norm('interseccao drastica', fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'yellow3', xlim = c(0, 10), ylim = c(0, 1), main = 'T-norm (Interseccao Drastica)', xlab = 'Domain', ylab = 'Membership Functions')
+# }
 
 
-apply_t_norm <- function (type, imageA, imageB) {
-  if(type == 'minimo') {
-    image = mapply(minimo, imageA, imageB)
-  } else if(type == 'produto') {
-    image = mapply(produto, imageA, imageB)
-  } else if(type == 'diferenca limitada') {
-    image = mapply(diferenca_limitada, imageA, imageB)
-  } else if(type == 'interseccao drastica') {
-    image = mapply(interseccao_drastica, imageA, imageB)
-  } else {
-    warning('invalid t_norm! Valid ones: minimo, produto algebrico, diferenca limitada, interseccao drastica)')
-  }
+# apply_t_norm <- function (type, imageA, imageB) {
+#   if(type == 'minimo') {
+#     image = mapply(minimo, imageA, imageB)
+#   } else if(type == 'produto') {
+#     image = mapply(produto, imageA, imageB)
+#   } else if(type == 'diferenca limitada') {
+#     image = mapply(diferenca_limitada, imageA, imageB)
+#   } else if(type == 'interseccao drastica') {
+#     image = mapply(interseccao_drastica, imageA, imageB)
+#   } else {
+#     warning('invalid t_norm! Valid ones: minimo, produto algebrico, diferenca limitada, interseccao drastica)')
+#   }
 
-  return(image)
-}
+#   return(image)
+# }
 
-s_norms <- function () {
-  domain = seq(0, 10, 0.1)
+# s_norms <- function () {
+#   domain = seq(0, 10, 0.1)
 
-  par(mfrow = c(3,3))
-  print_fuzzy_sets()
-  plot(domain, apply_s_norm('maximo', domain, fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'green', xlim = c(0, 10), ylim = c(0, 1), main = 'S-norm (Maximo)', xlab = 'Domain', ylab = 'Membership Functions')
-  plot(domain, apply_s_norm('soma algebrica', domain, fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'lightskyblue', xlim = c(0, 10), ylim = c(0, 1), main = 'S-norm (Soma Algebrica)', xlab = 'Domain', ylab = 'Membership Functions')
-  plot(domain, apply_s_norm('soma limitada', domain, fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'orange2', xlim = c(0, 10), ylim = c(0, 1), main = 'S-norm (Lukasiewics)', xlab = 'Domain', ylab = 'Membership Functions')
-  plot(domain, apply_s_norm('uniao drastica', domain, fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'yellow3', xlim = c(0, 10), ylim = c(0, 1), main = 'S-norm (Uniao Drastica)', xlab = 'Domain', ylab = 'Membership Functions')
-}
+#   par(mfrow = c(3,3))
+#   print_fuzzy_sets()
+#   plot(domain, apply_s_norm('maximo', domain, fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'green', xlim = c(0, 10), ylim = c(0, 1), main = 'S-norm (Maximo)', xlab = 'Domain', ylab = 'Membership Functions')
+#   plot(domain, apply_s_norm('soma algebrica', domain, fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'lightskyblue', xlim = c(0, 10), ylim = c(0, 1), main = 'S-norm (Soma Algebrica)', xlab = 'Domain', ylab = 'Membership Functions')
+#   plot(domain, apply_s_norm('soma limitada', domain, fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'orange2', xlim = c(0, 10), ylim = c(0, 1), main = 'S-norm (Lukasiewics)', xlab = 'Domain', ylab = 'Membership Functions')
+#   plot(domain, apply_s_norm('uniao drastica', domain, fuzzy_set_A_image, fuzzy_set_B_image), type = 'l', col = 'yellow3', xlim = c(0, 10), ylim = c(0, 1), main = 'S-norm (Uniao Drastica)', xlab = 'Domain', ylab = 'Membership Functions')
+# }
 
-apply_s_norm <- function (type, domain, imageA, imageB) {
-  if(type == 'maximo') {
-    image = mapply(maximo, imageA, imageB)
-  } else if(type == 'soma algebrica') {
-    image = mapply(soma_algebrica, imageA, imageB)
-  } else if(type == 'soma limitada') {
-    image = mapply(soma_limitada, imageA, imageB)
-  } else if(type == 'uniao drastica') {
-    image = mapply(uniao_drastica, imageA, imageB)
-  } else {
-    warning('invalid s_norm! Valid ones: maximo, soma algebrica, soma limitada, uniao drastica)')
-  }
+# apply_s_norm <- function (type, domain, imageA, imageB) {
+#   if(type == 'maximo') {
+#     image = mapply(maximo, imageA, imageB)
+#   } else if(type == 'soma algebrica') {
+#     image = mapply(soma_algebrica, imageA, imageB)
+#   } else if(type == 'soma limitada') {
+#     image = mapply(soma_limitada, imageA, imageB)
+#   } else if(type == 'uniao drastica') {
+#     image = mapply(uniao_drastica, imageA, imageB)
+#   } else {
+#     warning('invalid s_norm! Valid ones: maximo, soma algebrica, soma limitada, uniao drastica)')
+#   }
 
-  return(image)
-}
+#   return(image)
+# }
 
 triangular_membership_function <- function (x, a, m, b) {
   if (x >= a && x < m) {
