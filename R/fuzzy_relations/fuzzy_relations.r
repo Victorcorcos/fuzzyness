@@ -1,7 +1,8 @@
 require(tidyr)
+# library(plot3D)
 
 reload <- function () {
-  source('/Users/victorcosta/Desktop/Fuzzy/R/fuzzy_relations/fuzzy_relations.r')
+  source('/Users/victor/Desktop/Fuzzy/R/fuzzy_relations/fuzzy_relations.r')
 }
 
 print_fuzzy_sets <- function () {
