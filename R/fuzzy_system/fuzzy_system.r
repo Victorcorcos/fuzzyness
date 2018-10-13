@@ -3,12 +3,13 @@
 
 # Main functions
 reload <- function () {
-  source('/Users/victor/Desktop/Fuzzy/R/exerciciodeverdade/fuzzy_system.R')
+  source('/Users/victor/Desktop/Fuzzy/R/fuzzy_system/fuzzy_system.r')
 }
 
 print_fuzzy_sets <- function () {
-  plot(variacao_de_vendas_domain, variacao_de_vendas_setA, type = 'l', col = 'blue', xlim = c(-100, 100), ylim = c(0, 1), main = 'Fuzzy Sets (Variacao de vendas)', xlab = 'Domain', ylab = 'Membership Functions')
-
+  plot(variacao_de_vendas_domain,  variacao_de_vendas_setA, type = 'l', col = 'blue', xlim = c(-100, 100), ylim = c(0, 1), main = 'Fuzzy Sets (Variacao de vendas)', xlab = 'Domain', ylab = 'Membership Functions')
+  lines(variacao_de_vendas_domain, variacao_de_vendas_setB, type = 'l', col = 'red')
+  lines(variacao_de_vendas_domain, variacao_de_vendas_setC, type = 'l', col = 'green')
 
   # plot(fuzzy_set_A_domain, fuzzy_set_A_image, type = 'l', col = 'blue', xlim = c(0, 10), ylim = c(0, 1), main = 'Fuzzy Sets (A and B)', xlab = 'Domain', ylab = 'Membership Functions')
   # lines(fuzzy_set_B_domain, fuzzy_set_B_image, type = 'l', col = 'red')
@@ -150,7 +151,8 @@ fuzzy_set_B_image = sapply(fuzzy_set_B_domain, triangular_membership_function, a
 
 variacao_de_vendas_domain = seq(-100, 100, 0.1)
 variacao_de_vendas_setA = sapply(variacao_de_vendas_domain, trapezoidal_membership_function, a = -100, m = -100, n = -50, b = 0)
-
+variacao_de_vendas_setB = sapply(variacao_de_vendas_domain, triangular_membership_function, a = -50, m = 0, b = 50)
+variacao_de_vendas_setC = sapply(variacao_de_vendas_domain, trapezoidal_membership_function, a = 0, m = 50, n = 100, b = 100)
 
 # R Apply family (apply(), sapply(), mapply(), tapply() and so on)
 # https://www.datacamp.com/community/tutorials/r-tutorial-apply-family?utm_source=adwords_ppc&utm_campaignid=1455363063&utm_adgroupid=65083631748&utm_device=c&utm_keyword=&utm_matchtype=b&utm_network=g&utm_adpostion=1t1&utm_creative=278443377077&utm_targetid=dsa-473406586995&utm_loc_interest_ms=&utm_loc_physical_ms=1001533&gclid=CjwKCAjw2_LcBRBYEiwA_XVBU-8G9basGQa4sgLIUlojB4rsG-PqwhX32aGhwOOBJ1q7Xik9BaddshoCdX0QAvD_BwE

@@ -3,7 +3,7 @@ require(purrr)
 
 # Main functions
 reload <- function () {
-  source('/Users/victorcosta/Desktop/Fuzzy/R/fuzzy_sets_operations(t-norm,s-norm)/tnorm_snorm_plots.r')
+  source('/Users/victor/Desktop/Fuzzy/R/fuzzy_sets_operations=>t-norm,s-norm-/tnorm_snorm_plots.r')
 }
 
 print_fuzzy_sets <- function () {
@@ -102,7 +102,7 @@ soma_algebrica <- function (x, y) {
 }
 
 soma_limitada <- function (x, y) {
-  min(1, x+y)
+  min(1, x + y)
 }
 
 uniao_drastica <- function (x, y) {
