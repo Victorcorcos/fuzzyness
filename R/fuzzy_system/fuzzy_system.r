@@ -171,24 +171,24 @@ inference_method = readline(prompt = 'Enter inference method (mamdani or larsen)
 V_domain = seq(-100, 100, precision)
 V_setDiminuindo = sapply(V_domain, trapezoidal_membership_function, a = -100, m = -100, n = -50, b = 0)
 V_setEstavel = sapply(V_domain, triangular_membership_function,     a = -50,  m = 0,    b = 50)
-V_setAumentando = sapply(V_domain, trapezoidal_membership_function, a = 0,    m = 50,   n = 100, b = 100)
+V_setAumentando = sapply(V_domain, trapezoidal_membership_function, a = 0,    m = 50,   n = 100, b = 100); V_setAumentando[length(V_setAumentando)] = 1 # The last element is being 0 :(
 
 S_domain = seq(0, 100, precision)
 S_setBaixo = sapply(S_domain, triangular_membership_function, a = 0,  m = 0,   b = 50)
 S_setMedia = sapply(S_domain, triangular_membership_function, a = 0,  m = 50,  b = 100)
-S_setAlta = sapply(S_domain, triangular_membership_function,  a = 50, m = 100, b = 100)
+S_setAlta = sapply(S_domain, triangular_membership_function,  a = 50, m = 100, b = 100); S_setAlta[length(S_setAlta)] = 1 # The last element is being 0 :(
 
 I_domain = seq(0, 100, precision)
 I_setRuim = sapply(I_domain, triangular_membership_function,  a = 0,  m = 0,   b = 50)
 I_setMedio = sapply(I_domain, triangular_membership_function, a = 0,  m = 50,  b = 100)
-I_setBom = sapply(I_domain, triangular_membership_function,   a = 50, m = 100, b = 100)
+I_setBom = sapply(I_domain, triangular_membership_function,   a = 50, m = 100, b = 100); I_setBom[length(I_setBom)] = 1 # The last element is being 0 :(
 
 
 # Output
 R_domain = seq(0, 100, precision)
 R_setLeve = sapply(R_domain, triangular_membership_function,  a = 0,  m = 0,   b = 50)
 R_setMedia = sapply(R_domain, triangular_membership_function, a = 0,  m = 50,  b = 100)
-R_setForte = sapply(R_domain, triangular_membership_function, a = 50, m = 100, b = 100)
+R_setForte = sapply(R_domain, triangular_membership_function, a = 50, m = 100, b = 100); R_setForte[length(R_setForte)] = 1 # The last element is being 0 :(
 
 
 # Rules
