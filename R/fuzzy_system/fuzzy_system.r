@@ -53,6 +53,7 @@ trapezoidal_membership_function <- function (x, a, m, n, b) {
   }
 }
 
+
 # =============== Inference Engine =============== #
 create_rule <- function (V_set, S_set, I_set, R_set) {
   V_index = match(c(input_v), V_domain)
@@ -72,6 +73,7 @@ create_rule <- function (V_set, S_set, I_set, R_set) {
   }
   return(relation_result)
 }
+
 
 # =============== Rule aggregation method =============== #
 aggregate <- function (snorm) {
@@ -98,6 +100,7 @@ maximum_center <- function () {
 area_center <- function () {
   sum(mapply(produto, aggregation, R_domain)) / sum(aggregation)
 }
+
 
 # =============== Print functions =============== #
 print_fuzzy_sets <- function () {
