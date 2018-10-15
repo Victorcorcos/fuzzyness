@@ -33,10 +33,13 @@ implication_kliryuan <- function (x, y) { 1 - x + x^2 * y }
 triangular_membership_function <- function (x, a, m, b) {
   if (x >= a && x < m) {
     y = (x - a) / (m - a)
-  } else if (x >= m && x < b) {
+  } else if (x >= m && x <= b) {
     y = (b - x) / (b - m)
   } else {
     y = 0
+  }
+  if (is.nan(y)) {
+    y = 1
   }
   y
 }
@@ -46,24 +49,32 @@ trapezoidal_membership_function <- function (x, a, m, n, b) {
     y = (x - a) / (m - a)
   } else if(x >= m && x < n) {
     y = 1
-  } else if(x >= n && x < b) {
+  } else if(x >= n && x <= b) {
     y = (b - x) / (b - n)
   } else {
     y = 0
   }
+  if (is.nan(y)) {
+    y = 1
+  }
+  y
 }
 
 
 # =============== Inference Engine =============== #
-create_rule <- function (V_set, S_set, I_set, R_set) {
+get_lowest_membership_function <- function (V_set, S_set, I_set, R_set) {
   V_index = match(c(input_v), V_domain)
-  V_mf_value = V_set[V_index] # 1.0
+  V_mf_value = V_set[V_index]
   S_index = match(c(input_s), S_domain)
-  S_mf_value = S_set[S_index] # 0.2, o menor!
+  S_mf_value = S_set[S_index]
   I_index = match(c(input_i), I_domain)
-  I_mf_value = I_set[I_index] # 0.7
+  I_mf_value = I_set[I_index]
 
-  minimum = min(V_mf_value, S_mf_value, I_mf_value)
+  return(min(V_mf_value, S_mf_value, I_mf_value))
+}
+
+infer <- function (V_set, S_set, I_set, R_set) {
+  minimum = get_lowest_membership_function(V_set, S_set, I_set, R_set)
 
   # Inferences :)
   if (inference_method == 'mamdani') {
@@ -102,56 +113,77 @@ area_center <- function () {
 }
 
 
+# =============== Auxiliar Print function =============== #
+print_dotted_lines <- function (domain, set, value) {
+  index = match(c(value), domain)
+  mf_value = set[index]
+  cut_line = rep(mf_value, length(domain))
+  lines(cut_line, lty = 2, col = 'red')
+}
+
+
 # =============== Print functions =============== #
 print_fuzzy_sets <- function () {
-  par(mfrow = c(3,3))
-  plot(V_domain,  V_setDiminuindo, type = 'l', col = 'blue', xlim = c(-100, 100), ylim = c(0, 1), main = 'Variacao de vendas', xlab = 'Domain', ylab = 'Membership Functions')
+  par(mfrow = c(3,3), mar = c(5,3,2,2)+0.01)
+  plot(V_domain,  V_setDiminuindo, type = 'l', col = 'blue', xlim = c(-100, 100), ylim = c(0, 1), main = 'Variacao de vendas', xlab = 'Domain')
   lines(V_domain, V_setEstavel, type = 'l', col = 'red')
   lines(V_domain, V_setAumentando, type = 'l', col = 'green')
   legend('left', cex = 0.5, title = 'Linguistic Terms', c('Diminuindo','Estavel','Aumentando'), fill = c('blue', 'red', 'green'))
-  plot(S_domain,  S_setBaixo, type = 'l', col = 'blue', xlim = c(0, 100), ylim = c(0, 1), main = 'Sobrecarga de Servicos', xlab = 'Domain', ylab = 'Membership Functions')
+  plot(S_domain,  S_setBaixo, type = 'l', col = 'blue', xlim = c(0, 100), ylim = c(0, 1), main = 'Sobrecarga de Servicos', xlab = 'Domain')
   lines(S_domain, S_setMedia, type = 'l', col = 'red')
   lines(S_domain, S_setAlta, type = 'l', col = 'green')
   legend('left', cex = 0.5, title = 'Linguistic Terms', c('Baixo','Media','Alta'), fill = c('blue', 'red', 'green'))
-  plot(I_domain,  I_setRuim, type = 'l', col = 'blue', xlim = c(0, 100), ylim = c(0, 1), main = 'Nivel de Informatizacao', xlab = 'Domain', ylab = 'Membership Functions')
+  plot(I_domain,  I_setRuim, type = 'l', col = 'blue', xlim = c(0, 100), ylim = c(0, 1), main = 'Nivel de Informatizacao', xlab = 'Domain')
   lines(I_domain, I_setMedio, type = 'l', col = 'red')
   lines(I_domain, I_setBom, type = 'l', col = 'green')
   legend('left', cex = 0.5, title = 'Linguistic Terms', c('Ruim','Medio','Bom'), fill = c('blue', 'red', 'green'))
-  plot(R_domain,  R_setLeve, type = 'l', col = 'blue', xlim = c(0, 100), ylim = c(0, 1), main = 'Recomendacao de Investimento', xlab = 'Domain', ylab = 'Membership Functions')
+  plot(R_domain,  R_setLeve, type = 'l', col = 'blue', xlim = c(0, 100), ylim = c(0, 1), main = 'Recomendacao de Investimento', xlab = 'Domain')
   lines(R_domain, R_setMedia, type = 'l', col = 'red')
   lines(R_domain, R_setForte, type = 'l', col = 'green')
   legend('left', cex = 0.5, title = 'Linguistic Terms', c('Leve','Media','Forte'), fill = c('blue', 'red', 'green'))
 }
 
 print_rules <- function () {
-  par(mfrow = c(5, 5))
-  plot(V_setAumentando, ylim = c(0, 1), type = 'l', col = 'red', main = 'Vendas', xlab = 'Aumentando', ylab = 'Rule 1')
-  plot(S_setAlta, ylim = c(0, 1), type = 'l', col = 'green', main = 'Servicos', xlab = 'Alta', ylab = '')
-  plot(I_setBom, ylim = c(0, 1), type = 'l', col = 'yellow', main = 'Informatizacao', xlab = 'Bom', ylab = '')
-  plot(R_setForte, ylim = c(0, 1), type = 'l', col = 'purple', main = 'Investimento', xlab = 'Forte', ylab = '')
-  plot(rule_1_result, ylim = c(0, 1), type = 'l', col = 'blue', main = 'Resultado', xlab = '', ylab = '')
+  par(mfrow = c(5, 5), mar = c(5,3,2,2))
+  plot(V_setAumentando, ylim = c(0, 1), type = 'l', col = 'orange', main = 'Vendas', xlab = 'Aumentando', ylab = 'Rule 1')
+  print_dotted_lines(V_domain, V_setAumentando, input_v)
+  plot(S_setAlta, ylim = c(0, 1), type = 'l', col = 'green', main = 'Servicos', xlab = 'Alta')
+  print_dotted_lines(S_domain, S_setAlta, input_s)
+  plot(I_setBom, ylim = c(0, 1), type = 'l', col = 'black', main = 'Informatizacao', xlab = 'Bom')
+  print_dotted_lines(I_domain, I_setBom, input_i)
+  plot(R_setForte, ylim = c(0, 1), type = 'l', col = 'purple', main = 'Investimento', xlab = 'Forte')
+  plot(rule_1_result, ylim = c(0, 1), type = 'l', col = 'blue', main = 'Resultado', xlab = '')
 
-  plot(V_setAumentando, ylim = c(0, 1), type = 'l', col = 'red', main = 'Vendas', xlab = 'Aumentando', ylab = 'Rule 2')
-  plot(S_setMedia, ylim = c(0, 1), type = 'l', col = 'green', main = 'Servicos', xlab = 'Media', ylab = '')
-  plot(I_setBom, ylim = c(0, 1), type = 'l', col = 'yellow', main = 'Informatizacao', xlab = 'Bom', ylab = '')
-  plot(R_setMedia, ylim = c(0, 1), type = 'l', col = 'purple', main = 'Investimento', xlab = 'Media', ylab = '')
-  plot(rule_2_result, ylim = c(0, 1), type = 'l', col = 'blue', main = 'Resultado', xlab = '', ylab = '')
+  plot(V_setAumentando, ylim = c(0, 1), type = 'l', col = 'orange', main = 'Vendas', xlab = 'Aumentando', ylab = 'Rule 2')
+  print_dotted_lines(V_domain, V_setAumentando, input_v)
+  plot(S_setMedia, ylim = c(0, 1), type = 'l', col = 'green', main = 'Servicos', xlab = 'Media')
+  print_dotted_lines(S_domain, S_setMedia, input_s)
+  plot(I_setBom, ylim = c(0, 1), type = 'l', col = 'black', main = 'Informatizacao', xlab = 'Bom')
+  print_dotted_lines(I_domain, I_setBom, input_i)
+  plot(R_setMedia, ylim = c(0, 1), type = 'l', col = 'purple', main = 'Investimento', xlab = 'Media')
+  plot(rule_2_result, ylim = c(0, 1), type = 'l', col = 'blue', main = 'Resultado', xlab = '')
 
-  plot(V_setAumentando, ylim = c(0, 1), type = 'l', col = 'red', main = 'Vendas', xlab = 'Aumentando', ylab = 'Rule 3')
-  plot(S_setBaixo, ylim = c(0, 1), type = 'l', col = 'green', main = 'Servicos', xlab = 'Baixo', ylab = '')
-  plot(I_setBom, ylim = c(0, 1), type = 'l', col = 'yellow', main = 'Informatizacao', xlab = 'Bom', ylab = '')
-  plot(R_setLeve, ylim = c(0, 1), type = 'l', col = 'purple', main = 'Investimento', xlab = 'Leve', ylab = '')
-  plot(rule_3_result, ylim = c(0, 1), type = 'l', col = 'blue', main = 'Resultado', xlab = '', ylab = '')
+  plot(V_setAumentando, ylim = c(0, 1), type = 'l', col = 'orange', main = 'Vendas', xlab = 'Aumentando', ylab = 'Rule 3')
+  print_dotted_lines(V_domain, V_setAumentando, input_v)
+  plot(S_setBaixo, ylim = c(0, 1), type = 'l', col = 'green', main = 'Servicos', xlab = 'Baixo')
+  print_dotted_lines(S_domain, S_setBaixo, input_s)
+  plot(I_setBom, ylim = c(0, 1), type = 'l', col = 'black', main = 'Informatizacao', xlab = 'Bom')
+  print_dotted_lines(I_domain, I_setBom, input_i)
+  plot(R_setLeve, ylim = c(0, 1), type = 'l', col = 'purple', main = 'Investimento', xlab = 'Leve')
+  plot(rule_3_result, ylim = c(0, 1), type = 'l', col = 'blue', main = 'Resultado', xlab = '')
 
-  plot(V_setAumentando, ylim = c(0, 1), type = 'l', col = 'red', main = 'Vendas', xlab = 'Aumentando', ylab = 'Rule 4')
-  plot(S_setMedia, ylim = c(0, 1), type = 'l', col = 'green', main = 'Servicos', xlab = 'Media', ylab = '')
-  plot(I_setRuim, ylim = c(0, 1), type = 'l', col = 'yellow', main = 'Informatizacao', xlab = 'Ruim', ylab = '')
-  plot(R_setForte, ylim = c(0, 1), type = 'l', col = 'purple', main = 'Investimento', xlab = 'Forte', ylab = '')
-  plot(rule_4_result, ylim = c(0, 1), type = 'l', col = 'blue', main = 'Resultado', xlab = '', ylab = '')
+  plot(V_setAumentando, ylim = c(0, 1), type = 'l', col = 'orange', main = 'Vendas', xlab = 'Aumentando', ylab = 'Rule 4')
+  print_dotted_lines(V_domain, V_setAumentando, input_v)
+  plot(S_setMedia, ylim = c(0, 1), type = 'l', col = 'green', main = 'Servicos', xlab = 'Media')
+  print_dotted_lines(S_domain, S_setMedia, input_s)
+  plot(I_setRuim, ylim = c(0, 1), type = 'l', col = 'black', main = 'Informatizacao', xlab = 'Ruim')
+  print_dotted_lines(I_domain, I_setRuim, input_i)
+  plot(R_setForte, ylim = c(0, 1), type = 'l', col = 'purple', main = 'Investimento', xlab = 'Forte')
+  plot(rule_4_result, ylim = c(0, 1), type = 'l', col = 'blue', main = 'Resultado', xlab = '')
 }
 
 print_aggregation <- function () {
-  par(mfrow = c(3, 4))
+  par(mfrow = c(3, 4), mar = c(5,3,2,2))
   plot(rule_1_result, ylim = c(0, 1), type = 'l', col = 'blue',  main = 'Regra 1',   xlab = '', ylab = '')
   plot(rule_2_result, ylim = c(0, 1), type = 'l', col = 'green', main = 'Regra 2',   xlab = '', ylab = '')
   plot(rule_3_result, ylim = c(0, 1), type = 'l', col = 'black', main = 'Regra 3',   xlab = '', ylab = '')
@@ -174,35 +206,35 @@ inference_method = readline(prompt = 'Enter inference method (mamdani or larsen)
 V_domain = seq(-100, 100, precision)
 V_setDiminuindo = sapply(V_domain, trapezoidal_membership_function, a = -100, m = -100, n = -50, b = 0)
 V_setEstavel = sapply(V_domain, triangular_membership_function,     a = -50,  m = 0,    b = 50)
-V_setAumentando = sapply(V_domain, trapezoidal_membership_function, a = 0,    m = 50,   n = 100, b = 100); V_setAumentando[length(V_setAumentando)] = 1 # The last element is being 0 :(
+V_setAumentando = sapply(V_domain, trapezoidal_membership_function, a = 0,    m = 50,   n = 100, b = 100)
 
 S_domain = seq(0, 100, precision)
 S_setBaixo = sapply(S_domain, triangular_membership_function, a = 0,  m = 0,   b = 50)
 S_setMedia = sapply(S_domain, triangular_membership_function, a = 0,  m = 50,  b = 100)
-S_setAlta = sapply(S_domain, triangular_membership_function,  a = 50, m = 100, b = 100); S_setAlta[length(S_setAlta)] = 1 # The last element is being 0 :(
+S_setAlta = sapply(S_domain, triangular_membership_function,  a = 50, m = 100, b = 100)
 
 I_domain = seq(0, 100, precision)
 I_setRuim = sapply(I_domain, triangular_membership_function,  a = 0,  m = 0,   b = 50)
 I_setMedio = sapply(I_domain, triangular_membership_function, a = 0,  m = 50,  b = 100)
-I_setBom = sapply(I_domain, triangular_membership_function,   a = 50, m = 100, b = 100); I_setBom[length(I_setBom)] = 1 # The last element is being 0 :(
+I_setBom = sapply(I_domain, triangular_membership_function,   a = 50, m = 100, b = 100)
 
 
 # Output
 R_domain = seq(0, 100, precision)
 R_setLeve = sapply(R_domain, triangular_membership_function,  a = 0,  m = 0,   b = 50)
 R_setMedia = sapply(R_domain, triangular_membership_function, a = 0,  m = 50,  b = 100)
-R_setForte = sapply(R_domain, triangular_membership_function, a = 50, m = 100, b = 100); R_setForte[length(R_setForte)] = 1 # The last element is being 0 :(
+R_setForte = sapply(R_domain, triangular_membership_function, a = 50, m = 100, b = 100)
 
 
 # Rules
 # 1) Se V está aumentando e S é alta e I é bom então R é forte.
-rule_1_result = create_rule(V_setAumentando, S_setAlta, I_setBom, R_setForte)
+rule_1_result = infer(V_setAumentando, S_setAlta, I_setBom, R_setForte)
 # 2) Se V está aumentando e S é média e I é bom então R é média.
-rule_2_result = create_rule(V_setAumentando, S_setMedia, I_setBom, R_setMedia)
+rule_2_result = infer(V_setAumentando, S_setMedia, I_setBom, R_setMedia)
 # 3) Se V está aumentando e S é baixa e I é bom então R é leve.
-rule_3_result = create_rule(V_setAumentando, S_setBaixo, I_setBom, R_setLeve)
+rule_3_result = infer(V_setAumentando, S_setBaixo, I_setBom, R_setLeve)
 # 4) Se V está aumentando e S é média e I é ruim então R é forte.
-rule_4_result = create_rule(V_setAumentando, S_setMedia, I_setRuim, R_setForte)
+rule_4_result = infer(V_setAumentando, S_setMedia, I_setRuim, R_setForte)
 
 
 # Aggregation
