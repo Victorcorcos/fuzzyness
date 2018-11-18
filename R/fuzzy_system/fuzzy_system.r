@@ -31,21 +31,22 @@ implication_kliryuan <- function (x, y) { 1 - x + x^2 * y }
 
 # =============== Membership Functions ===============
 triangular_membership_function <- function (x, a, m, b) {
-  if (x >= a && x < m) {
+  if (x == m && m == b) {
+    y = 1
+  } else if (x >= a && x < m) {
     y = (x - a) / (m - a)
   } else if (x >= m && x <= b) {
     y = (b - x) / (b - m)
   } else {
     y = 0
   }
-  if (is.nan(y)) {
-    y = 1
-  }
   y
 }
 
 trapezoidal_membership_function <- function (x, a, m, n, b) {
-  if (x >= a && x < m) {
+  if (x == n && n == b) {
+    y = 1
+  } else if (x >= a && x < m) {
     y = (x - a) / (m - a)
   } else if(x >= m && x < n) {
     y = 1
@@ -54,10 +55,11 @@ trapezoidal_membership_function <- function (x, a, m, n, b) {
   } else {
     y = 0
   }
-  if (is.nan(y)) {
-    y = 1
-  }
   y
+}
+
+gaussian_membership_function <- function (x, m, o) { # m = 2, o = 30
+  exp(-((x - m)^2)/(o^2))
 }
 
 
@@ -124,7 +126,7 @@ print_dotted_lines <- function (domain, set, value) {
 
 # =============== Print functions =============== #
 print_fuzzy_sets <- function () {
-  par(mfrow = c(3,3), mar = c(5,3,2,2)+0.01)
+  par(mfrow = c(3,3), mar = c(5, 3, 2, 2)+0.01)
   plot(V_domain,  V_setDiminuindo, type = 'l', col = 'blue', xlim = c(-100, 100), ylim = c(0, 1), main = 'Variacao de vendas', xlab = 'Domain')
   lines(V_domain, V_setEstavel, type = 'l', col = 'red')
   lines(V_domain, V_setAumentando, type = 'l', col = 'green')
@@ -144,7 +146,7 @@ print_fuzzy_sets <- function () {
 }
 
 print_rules <- function () {
-  par(mfrow = c(5, 5), mar = c(5,3,2,2))
+  par(mfrow = c(5, 5), mar = c(5, 3, 2, 2))
   plot(V_setAumentando, ylim = c(0, 1), type = 'l', col = 'orange', main = 'Vendas', xlab = 'Aumentando', ylab = 'Rule 1')
   print_dotted_lines(V_domain, V_setAumentando, input_v)
   plot(S_setAlta, ylim = c(0, 1), type = 'l', col = 'green', main = 'Servicos', xlab = 'Alta')
@@ -183,7 +185,7 @@ print_rules <- function () {
 }
 
 print_aggregation <- function () {
-  par(mfrow = c(3, 4), mar = c(5,3,2,2))
+  par(mfrow = c(3, 4), mar = c(5, 3, 2, 2))
   plot(rule_1_result, ylim = c(0, 1), type = 'l', col = 'blue',  main = 'Regra 1',   xlab = '', ylab = '')
   plot(rule_2_result, ylim = c(0, 1), type = 'l', col = 'green', main = 'Regra 2',   xlab = '', ylab = '')
   plot(rule_3_result, ylim = c(0, 1), type = 'l', col = 'black', main = 'Regra 3',   xlab = '', ylab = '')
