@@ -73,18 +73,17 @@ create_blank_matrix <- function (labels) {
   matrix(, ncol = length(labels), dimnames = list(NULL, labels))[-1,]
 }
 
-add_linguistic_variable <- function (linguistic_variable_sets, linguistic_variable, sets) {
-  sets_and_nas = rep(NA, max_granularity + 1) # +1 for the Domain
+add_linguistic_variable <- function (linguistic_variable, sets) {
+  sets_and_nas = rep(NA, global$max_granularity + 1) # +1 for the Domain
   for(index in 1:length(sets_and_nas)) {
     sets_and_nas[index] = sets[index]
   }
 
-  if (length(linguistic_variable_sets) == 0) {
-    return(matrix(sets_and_nas, ncol = 1, dimnames = list(NULL, linguistic_variable)))
+  if (length(global$linguistic_variable_sets) == 0) {
+    global$linguistic_variable_sets = matrix(sets_and_nas, ncol = 1, dimnames = list(NULL, linguistic_variable))
   } else {
-    linguistic_variable_sets = cbind(linguistic_variable_sets, sets_and_nas)
-    colnames(linguistic_variable_sets)[ncol(linguistic_variable_sets)] = linguistic_variable
-    return(linguistic_variable_sets)
+    global$linguistic_variable_sets = cbind(global$linguistic_variable_sets, sets_and_nas)
+    colnames(global$linguistic_variable_sets)[ncol(global$linguistic_variable_sets)] = linguistic_variable
   }
 }
 
@@ -92,12 +91,12 @@ constantize <- function (name) {
   eval(parse(text = name))
 }
 
-get_sets <- function(linguistic_variable_sets, linguistic_variable) {
-  na.omit(linguistic_variable_sets[,c(linguistic_variable)][-1])
+get_sets <- function(linguistic_variable) {
+  na.omit(global$linguistic_variable_sets[,c(linguistic_variable)][-1])
 }
 
-get_domain <- function(linguistic_variable_sets, linguistic_variable) {
-  linguistic_variable_sets[,c(linguistic_variable)][1]
+get_domain <- function(linguistic_variable) {
+  global$linguistic_variable_sets[,c(linguistic_variable)][1]
 }
 
 # =============== Rules Generation =============== #
@@ -108,8 +107,8 @@ generate_rules <- function () {
   for(row in 1:nrow(dataset)) {
     for(col in 1:ncol(dataset)) {
       linguistic_variable = names(dataset[row, col])
-      linguistic_sets = get_sets(linguistic_variable_sets, linguistic_variable)
-      linguistic_domain = get_domain(linguistic_variable_sets, linguistic_variable)
+      linguistic_sets = get_sets(linguistic_variable)
+      linguistic_domain = get_domain(linguistic_variable)
 
       current_sets = c()
       current_mf_values = c()
@@ -173,33 +172,33 @@ remove_rule <- function (rule_row) {
 
 # ====================================================
 
+global = new.env()
 
-precision = 1.0
-max_granularity = 9
-linguistic_variable_sets = c()
+global$linguistic_variable_sets = c()
+global$max_granularity = 9
+domain_precision = 1.0
 
 # Rule Input 1 (Vendas)
-V_domain = seq(-100, 100, precision)
+V_domain = seq(-100, 100, domain_precision)
 V_Diminuindo = sapply(V_domain, trapezoidal_membership_function, a = -100, m = -100, n = -50, b = 0)
 V_Estavel = sapply(V_domain, triangular_membership_function,     a = -50,  m = 0,    b = 50)
 V_Aumentando = sapply(V_domain, trapezoidal_membership_function, a = 0,    m = 50,   n = 100, b = 100)
-linguistic_variable_sets = add_linguistic_variable(linguistic_variable_sets, 'Vendas', c('V_domain', 'V_Diminuindo', 'V_Estavel', 'V_Aumentando'))
+add_linguistic_variable('Vendas', c('V_domain', 'V_Diminuindo', 'V_Estavel', 'V_Aumentando'))
 
 # Can be more!!
 
 
 # Rule Output (Recomendacao)
-R_domain = seq(0, 100, precision)
+R_domain = seq(0, 100, domain_precision)
 R_Leve = sapply(R_domain, triangular_membership_function,  a = 0,  m = 0,   b = 50)
 R_Media = sapply(R_domain, triangular_membership_function, a = 0,  m = 50,  b = 100)
 R_Forte = sapply(R_domain, triangular_membership_function, a = 50, m = 100, b = 100)
-linguistic_variable_sets = add_linguistic_variable(linguistic_variable_sets, 'Recomendacao', c('R_domain', 'R_Leve', 'R_Media', 'R_Forte'))
+add_linguistic_variable('Recomendacao', c('R_domain', 'R_Leve', 'R_Media', 'R_Forte'))
 
 entries = c(10, 100, 20, 60)
 labels = c('Vendas', 'Recomendacao')
 dataset = create_matrix(entries, labels)
 
-global = new.env()
 global$rules_values = create_blank_matrix(labels)
 global$rules_sets = create_blank_matrix(labels)
 
