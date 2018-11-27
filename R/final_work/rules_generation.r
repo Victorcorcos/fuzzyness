@@ -58,6 +58,33 @@ gaussian_membership_function <- function (x, m, o) { # m = 2, o = 30
   exp(-((x - m)^2)/(o^2))
 }
 
+# =============== Print functions =============== #
+print_fuzzy_sets <- function () {
+  par(mfrow = c(3,3), mar = c(5, 3, 2, 2)+0.01)
+  for(col in 1:ncol(global$linguistic_variable_sets)) {
+    linguistic_variable = colnames(global$linguistic_variable_sets)[col]
+    sets_domain = get_domain(linguistic_variable)
+    fuzzy_sets = get_sets(linguistic_variable)
+    for(index in 1:length(fuzzy_sets)) {
+      if (index == 1) {
+        plot(constantize(sets_domain), constantize(fuzzy_sets[index]), type = 'l', col = get_color(index), xlim = c(-100, 100), ylim = c(0, 1), main = linguistic_variable, xlab = 'Domain')
+      } else {
+       lines(constantize(sets_domain), constantize(fuzzy_sets[index]), type = 'l', col = get_color(index)) 
+      }
+    }
+    legend('left', cex = 0.5, title = 'Linguistic Terms', fuzzy_sets)
+  }
+
+  # plot(V_domain,  V_Diminuindo, type = 'l', col = 'blue', xlim = c(-100, 100), ylim = c(0, 1), main = 'Variacao de vendas', xlab = 'Domain')
+  # lines(V_domain, V_Estavel, type = 'l', col = 'red')
+  # lines(V_domain, V_Aumentando, type = 'l', col = 'green')
+  # legend('left', cex = 0.5, title = 'Linguistic Terms', c('Diminuindo','Estavel','Aumentando'), fill = c('blue', 'red', 'green'))
+  # plot(R_domain,  R_Leve, type = 'l', col = 'blue', xlim = c(0, 100), ylim = c(0, 1), main = 'Recomendacao de Investimento', xlab = 'Domain')
+  # lines(R_domain, R_Media, type = 'l', col = 'red')
+  # lines(R_domain, R_Forte, type = 'l', col = 'green')
+  # legend('left', cex = 0.5, title = 'Linguistic Terms', c('Leve','Media','Forte'), fill = c('blue', 'red', 'green'))
+}
+
 # =============== Inference Engine =============== #
 get_membership_value <- function (value, set, domain) {
   index = match(c(value), domain)
@@ -99,6 +126,11 @@ get_domain <- function(linguistic_variable) {
   global$linguistic_variable_sets[,c(linguistic_variable)][1]
 }
 
+get_color <- function(number) {
+  colors = c('blue', 'red', 'chartreuse3', 'chocolate3', 'blueviolet', 'gold3', 'khaki', 'navy', 'slateblue1')
+  return(colors[number])
+}
+
 # =============== Rules Generation =============== #
 generate_rules <- function () {
   rule_line_values = c()
@@ -125,7 +157,6 @@ generate_rules <- function () {
       rule_line_values = append(rule_line_values, max_membership_value)
       rule_line_sets = append(rule_line_sets, max_fuzzy_set)
     }
-
     add_rule_by_strength(rule_line_values, rule_line_sets)
 
     rule_line_values = c()
@@ -134,6 +165,7 @@ generate_rules <- function () {
 }
 
 # This function add rules if they have higher strength
+# If the rule is added, TRUE is returned. Otherwise, FALSE is returned
 add_rule_by_strength <- function (rule_line_values, rule_line_sets) {
   if (length(global$rules_values) == 0) {
     add_rule(rule_line_values, rule_line_sets)
@@ -143,10 +175,14 @@ add_rule_by_strength <- function (rule_line_values, rule_line_sets) {
         if (prod(rule_line_values) > strength(row)) {
           remove_rule(row)
           add_rule(rule_line_values, rule_line_sets)
-          break
+          return(TRUE)
+        } else {
+          return(FALSE)
         }
       }
     }
+    add_rule(rule_line_values, rule_line_sets)
+    return(TRUE)
   }
 }
 
@@ -174,7 +210,7 @@ remove_rule <- function (rule_row) {
 
 global = new.env()
 
-global$linguistic_variable_sets = c()
+global$linguistic_variable_sets = c() # THE MOST IMPORTANT GLOBAL VARIABLE!
 global$max_granularity = 9
 domain_precision = 1.0
 
@@ -195,8 +231,12 @@ R_Media = sapply(R_domain, triangular_membership_function, a = 0,  m = 50,  b = 
 R_Forte = sapply(R_domain, triangular_membership_function, a = 50, m = 100, b = 100)
 add_linguistic_variable('Recomendacao', c('R_domain', 'R_Leve', 'R_Media', 'R_Forte'))
 
-entries = c(10, 100, 20, 60)
-labels = c('Vendas', 'Recomendacao')
+#  Vendas   Recomendacao
+#    10   |     100
+#    20   |     60
+#  -100   |     0
+entries = c(10, 100, 20, 60, -100, 0)
+labels = colnames(global$linguistic_variable_sets)
 dataset = create_matrix(entries, labels)
 
 global$rules_values = create_blank_matrix(labels)
