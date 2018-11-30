@@ -3,7 +3,7 @@
 
 # Main functions
 reload <- function () {
-  source('/Users/victor/Desktop/Fuzzy/R/fuzzy_system/fuzzy_system.r')
+  source('/Users/victor/Desktop/Fuzzy/R/fuzzy_system/naive_fuzzy_system.r')
 }
 
 # =============== T-norms ===============

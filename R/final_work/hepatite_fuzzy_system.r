@@ -19,14 +19,16 @@ soma_limitada <- function (x, y) { min(1, x+y) }
 uniao_drastica <- function (x, y) { if(x == 0) return(y) else if(y == 0) return(x) else return(1) }
 
 # =============== Implication operators ===============
-implication_lukasiewics <- function (x, y) { min(1, 1-x+y) }
-implication_kleene <- function (x, y) { max(1-x, y) }
-implication_reichenbach <- function (x, y) { 1 - x + x*y }
-implication_zadeh <- function (x, y) { max(1-x, min(x, y)) }
-implication_gaines <- function (x, y) { if(x <= y) return(1) else return(0) }
-implication_godel <- function (x, y) { if (x <= y) return(1) else return(y) }
-implication_goguen <- function (x, y) { if (x <= y) return(1) else return(y/x) }
-implication_kliryuan <- function (x, y) { 1 - x + x^2 * y }
+mamdani <- function (x, y) { min(x, y) }
+larsen <- function (x, y) { x * y }
+lukasiewics <- function (x, y) { min(1, 1-x+y) }
+kleene <- function (x, y) { max(1-x, y) }
+reichenbach <- function (x, y) { 1 - x + x*y }
+zadeh <- function (x, y) { max(1-x, min(x, y)) }
+gaines <- function (x, y) { if(x <= y) return(1) else return(0) }
+godel <- function (x, y) { if (x <= y) return(1) else return(y) }
+goguen <- function (x, y) { if (x <= y) return(1) else return(y/x) }
+kliryuan <- function (x, y) { 1 - x + x^2 * y }
 
 
 # =============== Membership Functions ===============
@@ -68,7 +70,7 @@ get_membership_value <- function (value, set, domain) {
   return(set[index])
 }
 
-get_lowest_membership_value <- function (V_set, S_set, I_set, R_set) {
+get_lowest_membership_value <- function (V_set, S_set, I_set) {
   V_mf_value = get_membership_value(input_v, V_set, V_domain)
   S_mf_value = get_membership_value(input_s, S_set, S_domain)
   I_mf_value = get_membership_value(input_i, I_set, I_domain)
@@ -77,14 +79,10 @@ get_lowest_membership_value <- function (V_set, S_set, I_set, R_set) {
 }
 
 infer <- function (V_set, S_set, I_set, R_set) {
-  minimum = get_lowest_membership_value(V_set, S_set, I_set, R_set)
+  minimum = get_lowest_membership_value(V_set, S_set, I_set)
 
   # Inferences :)
-  if (inference_method == 'mamdani') {
-    relation_result = sapply(R_set, minimo, y = minimum)
-  } else if (inference_method == 'larsen') {
-    relation_result = sapply(R_set, produto, y = minimum)
-  }
+  relation_result = sapply(R_set, global$implication, y = minimum)
   return(relation_result)
 }
 
@@ -203,7 +201,8 @@ input_i = 85
 
 precision = 1.0
 
-inference_method = readline(prompt = 'Enter inference method (mamdani or larsen): ')
+global = new.env()
+global$implication = kliryuan
 
 # Inputs
 V_domain = seq(-100, 100, precision)
