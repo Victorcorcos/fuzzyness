@@ -86,12 +86,18 @@ print_fuzzy_sets <- function () {
 }
 
 # =============== Inference Engine =============== #
+inference <- function (data_item) {
+  for(row in 1:nrow(global$rules_sets)) {
+
+  }
+}
+
 get_membership_value <- function (value, set, domain) {
   index = match(c(value), domain)
   return(set[index])
 }
 
-# =============== Axiliar Functions =============== #
+# =============== Auxiliar Functions =============== #
 create_matrix <- function (inputs, labels) {
   matrix(inputs, ncol = length(labels), byrow = TRUE, dimnames = list(NULL, labels))
 }
@@ -127,6 +133,7 @@ get_domain <- function(linguistic_variable) {
 }
 
 get_color <- function(number) {
+  number = (number %% 8) + 1
   colors = c('blue', 'red', 'chartreuse3', 'chocolate3', 'blueviolet', 'gold3', 'khaki', 'navy', 'slateblue1')
   return(colors[number])
 }
@@ -136,9 +143,9 @@ generate_rules <- function () {
   rule_line_values = c()
   rule_line_sets = c()
 
-  for(row in 1:nrow(dataset)) {
-    for(col in 1:ncol(dataset)) {
-      linguistic_variable = names(dataset[row, col])
+  for(row in 1:nrow(global$training_data)) {
+    for(col in 1:ncol(global$training_data)) {
+      linguistic_variable = names(global$training_data[row, col])
       linguistic_sets = get_sets(linguistic_variable)
       linguistic_domain = get_domain(linguistic_variable)
 
@@ -147,7 +154,7 @@ generate_rules <- function () {
 
       for(i in 1:length(linguistic_sets)) {
         current_sets = append(current_sets, c(linguistic_sets[i]))
-        mf = get_membership_value(dataset[row, col], constantize(linguistic_sets[i]), constantize(linguistic_domain))
+        mf = get_membership_value(global$training_data[row, col], constantize(linguistic_sets[i]), constantize(linguistic_domain))
         current_mf_values = append(current_mf_values, mf)
       }
 
@@ -206,6 +213,40 @@ remove_rule <- function (rule_row) {
   global$rules_sets = global$rules_sets[-rule_row,]
 }
 
+initialize_dataset <- function (entries) {
+  #  Vendas   Recomendacao
+  #    10   |     100
+  #    20   |     60
+  #  -100   |     0
+  entries = c(10, 100, -100, 0, 20, 60)
+  labels = colnames(global$linguistic_variable_sets)
+  global$dataset = create_matrix(entries, labels)
+
+  global$rules_values = create_blank_matrix(labels)
+  global$rules_sets = create_blank_matrix(labels)
+}
+
+# training_percentage: The percentage of the dataset designed for training data
+create_training_and_test <- function (training_percentage) {
+  total = nrow(global$dataset)
+  training = round(total * training_percentage)
+  test = training + 1
+  global$training_data = global$dataset[seq(1, training),]
+  global$test_data = global$dataset[seq(test, total),]
+
+  # When there is just one element, R transforms the output to a vector instead of a matrix...
+  # We NEED the matrix for further calculations, so I'm converting here!
+  if (is.null(dim(global$training_data))) {
+    global$training_data = matrix(data=global$training_data, ncol=length(global$training_data), dimnames=list(NULL, colnames(global$training_data)))
+  }
+  if (is.null(dim(global$test_data))) {
+    global$test_data = matrix(data=global$test_data, ncol=length(global$test_data), dimnames=list(NULL, colnames(global$training_data)))
+  }
+
+  print(global$training_data)
+  print(global$test_data)
+}
+
 # ====================================================
 
 global = new.env()
@@ -231,21 +272,21 @@ R_Media = sapply(R_domain, triangular_membership_function, a = 0,  m = 50,  b = 
 R_Forte = sapply(R_domain, triangular_membership_function, a = 50, m = 100, b = 100)
 add_linguistic_variable('Recomendacao', c('R_domain', 'R_Leve', 'R_Media', 'R_Forte'))
 
+initialize_dataset()
 #  Vendas   Recomendacao
 #    10   |     100
-#    20   |     60
 #  -100   |     0
-entries = c(10, 100, 20, 60, -100, 0)
-labels = colnames(global$linguistic_variable_sets)
-dataset = create_matrix(entries, labels)
+#    20   |     60
 
-global$rules_values = create_blank_matrix(labels)
-global$rules_sets = create_blank_matrix(labels)
+create_training_and_test(0.8) # 80% for training
 
-generate_rules()
+generate_rules() # Wang & Mendel
+
+data_item = c(-100, 0)
+inference(data_item)
 
 
-# Real work data below...
+# Real data below...
 #
 # 49 colunas
 # attribute_labels = c('ANO_NOTIF', 'Idade', 'SEXO', 'GESTANTE', 'RACA_COR', 'ESCOLARIDADE', 'ZONA_RESID', 'UF_NOTIF', 'UF_RESID', 'REGIAO_NOTIF', 'REGIAO_RESIDE', 'PAIS_RESIDE', 'SUSPDE', 'VAC_HEPA', 'VAC_HEPB', 'INSTITUCIONAL', 'AGR_ASS_HIV', 'AGR_ASS_DST', 'CON_SEXUAL', 'CON_DOMICILIAR', 'CON_OCUPACIONAL', 'MED_INJET', 'TATUA_PIERC', 'AC_MAT_BIOL', 'DR_INAL_CRACK', 'ACUNPUT', 'TRANSF_SAN', 'DR_INJETAV', 'TRAT_CIRUR', 'AGUA_AL_CONT', 'TR_DENTARIO', 'TRES_PARC_SEX', 'HEMOD', 'TRANSPLANTE', 'E_OUTRAS', 'R_ANTIHAVIGM', 'R_ANTIHBS', 'R_ANTIHDVIGM', 'R_HBSAG', 'R_HBEAG', 'R_ANTIHEVIGM', 'R_ANTIHBCIGM', 'R_ANTIHBE', 'R_ANTIHCV', 'R_ANTIHBCTOTAL', 'R_ANTIHDVTOTAL', 'R_HCVRNA', 'FONTE_INFEC', 'CF11')
@@ -278,7 +319,7 @@ generate_rules()
 # 1,54,1,6,1,0,1,29,29,2,2,1,3.0,9.0,9.0,9.0,2.0,2.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,2.0,1.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,1.0,4.0,4.0,99.0,1,
 # 1,37,1,6,4,4,1,14,14,1,1,1,2.0,3.0,3.0,9.0,2.0,2.0,2.0,2.0,2.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,3.0,4.0,2.0,4.0,2.0,4.0,4.0,4.0,4.0,2.0,1.0,4.0,4.0,99.0,1)
 
-# dataset = matrix(inputs, ncol = 49, byrow = TRUE, dimnames = list(NULL, attribute_labels))
+# global$dataset = matrix(inputs, ncol = 49, byrow = TRUE, dimnames = list(NULL, attribute_labels))
 
 ### Hints
 # * Create a rule matrix
@@ -321,3 +362,6 @@ generate_rules()
 
 # * List current variables
 # ls()
+
+# * List global variables
+# ls(global)

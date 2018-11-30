@@ -239,8 +239,6 @@ rule_3_result = infer(V_setAumentando, S_setBaixo, I_setBom, R_setLeve)
 # 4) Se V está aumentando e S é média e I é ruim então R é forte.
 rule_4_result = infer(V_setAumentando, S_setMedia, I_setRuim, R_setForte)
 
-rules <- matrix(1:9, nrow = 3, dimnames = list(c('', '', ''), c('InputA', 'InputB', 'Output')))
-
 
 # Aggregation
 aggregation = aggregate(maximo)
