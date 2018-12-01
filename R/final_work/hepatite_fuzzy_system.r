@@ -202,7 +202,7 @@ input_i = 85
 precision = 1.0
 
 global = new.env()
-global$implication = kliryuan
+global$implication = mamdani
 
 # Inputs
 V_domain = seq(-100, 100, precision)
