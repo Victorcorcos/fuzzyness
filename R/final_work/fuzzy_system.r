@@ -519,11 +519,10 @@ for (tnorm in tnorms) {
     for (implication in implications) {
       for (defuzification in defuzifications) {
         global$tnorm = constantize(tnorm)
-        global$implication = constantize(implication)
         global$snorm = constantize(snorm)
+        global$implication = constantize(implication)
         global$defuzification = constantize(defuzification)
         measure_accuracy() # Makes the inference for all test samples and calculate the accuracy
-
         add_new_accuracy(tnorm, snorm, implication, defuzification)
       }
     }
