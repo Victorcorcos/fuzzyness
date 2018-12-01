@@ -1,0 +1,255 @@
+reload()
+reload()
+reload()
+reload()
+global$linguistic_variable_sets
+reload()
+Speed_MuitoPouco
+Speed_Pouco
+Speed_Medio
+Speed_Domain
+Speed_MuitoPouco
+reload()
+reload()
+Speed_Muitissimo
+assign(Speed_Muitissimo, '3')
+assign('Speed_Muitissimo', '3')
+reload9
+reload()
+global$dataset
+global$dataset[,1]
+min(global$dataset[,1])
+max(global$dataset[,1])
+reload()
+global$linguistic_variable_sets
+get_set_names()
+reload()
+global$linguistic_variable_sets
+reload()
+global$dataset
+reload()
+global$dataset
+global$linguistic_variable_sets
+Speed_Muitissimo
+Speed_Muito
+Speed_Medio
+Speed_MuitoPouco
+Speed_Domain
+domain_var
+reload()
+global$oloco
+ls()
+Speed_Domain
+Speed_Muitissimo
+oloco
+global$oloco
+reload()
+global$linguistic_terms
+reload()
+reload()
+max(global$dataset[,1])
+min(global$dataset[,1])
+10-1/()
+get_set_names()
+10-1/(3-2)
+reload()
+global$step
+min(global$dataset[,1])
+global$dataset[]
+global$dataset[,2]
+min(global$dataset[,2])
+max(global$dataset[,2])
+maximum = max(global$dataset[,2])
+minimum = min(global$dataset[,2])
+set_names = get_set_names()
+set_names
+(maximum - minimum) / (length(set_names)-1)
+reload()
+(maximum - minimum) / (length(set_names)-1)
+Speed_Muito
+global$fuzzy_sets
+global$fuzzy_set
+ls(global)
+global$linguistic_variable_sets
+assign('opa', 4)
+opa
+constantize('opa')
+constantize('value', sapply(c(1,2,3,4,5), max))
+constantize('value', sapply(c(1,2,3,4,5), max, 3))
+constantize('value', sapply(c(1,2,3,4,5), prod, 3))
+assign('value', sapply(c(1,2,3,4,5), prod, 3))
+value
+get_set_names()
+reload()
+reload()
+Speed_Pouco
+Speed_Medio
+Speed_Muito
+reload()
+Speed_Pouco
+Power_Medio
+reload()
+global$rules
+global$training_data
+global$test_data
+global$training_data
+global$rules
+ls(global)
+global$linguistic_variable_sets
+global$rules_values
+global$dataset
+global$dataset
+colnames(global$dataset)[1]
+min(global$dataset[,1])
+max(global$dataset[,1])
+reload()
+global$dataset
+global$rules
+print_fuzzy_sets()
+if(x > 4)
+print('opa')
+if (NA > 4)
+print(2)
+global$rules
+strength(1)
+strength(2)
+strength(3)
+strength(1)
+global$rules_values
+global$rules
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+global$training_data
+reload()
+global$training_data
+global$training_data[2, 1]
+print_fuzzy_sets()
+is.na(NA)
+reload()
+reload()
+row = 2
+col = 1
+global$training_data[row, col]
+reload()
+row = 2
+col = 1
+global$training_data[row, col]
+l1 = 'Speed_Pouco'
+l2 = 'Speed_Domain'
+l1
+l2
+global$training_data[row, col]
+get_membership_value(global$training_data[row, col], constantize(l1), constantize(l2))
+constantize(l2)
+reload()
+Speed_Domain
+reload()
+reload()
+print_fuzzy_sets()
+global$dataset
+reload()
+reload()
+reload()
+global$tnorm = minimo#
+global$implication = larsen#
+global$snorm = maximo#
+global$defuzification = maximum_center
+measure_accuracy()
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+Speed_Domain
+Speed_Pouco
+reload()
+reload()
+Angle_Domain
+global$dataset
+global$test
+reload()
+reload()
+reload()
+reload()
+global$rule_inferences
+global$rules
+precedent_matrix()
+consequent_vector()
+global$test_data
+reload()
+globa$rules
+global$rules
+global$linguistic_variable_sets
+reload()
+precedent_matrix()
+precedent_matrix()[1,1]
+precedent_matrix()[1,1]global$test_data
+global$test_data
+global$test_data
+global$test_data[,-ncol(global$test_data)]
+global$rules
+global$rules[,-ncol(global$rules)]
+precedents = global$rules[,-ncol(global$rules)]
+is.null(dim(precedents))
+reload()
+reload()
+global$test_data[,-ncol(global$test_data)]
+global$test_data[,-ncol(global$test_data)][2]
+global$test_data[,-ncol(global$test_data)][,2]
+global$test_data[,-ncol(global$test_data)][1,2]
+reload()
+precedent_matrix()
+global$test_data
+rule_precendents = precedent_matrix()#
+  rule_consequent  = consequent_vector()#
+  global$rule_inferences = c()
+rule_consequent
+rule_precendents
+reload()
+rule_precendents
+test_sample
+global$test_data[,-ncol(global$test_data)]
+global$test_data[,-ncol(global$test_data)]
+global$test_data[,-ncol(global$test_data)][1,]
+reload()
+print_aggregation()
+print_fuzzy_sets()
+consequent_domain()
+global$dataset
+colnames(global$dataset)[ncol(global$dataset)]
+get_domain(colnames(global$dataset)[ncol(global$dataset)])
+get_domain(colnames(global$dataset)[ncol(global$dataset)])
+constantize(get_domain(colnames(global$dataset)[ncol(global$dataset)]))
+Power_Domain
+global$rules
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+reload()
+debug()
+debug(generate_rules)
+debug()
+debug(generate_rules)
+debug(create_training_and_test)
+debug(reload())
+options(error = quote({dump.frames(to.file=TRUE); q()}))
+reload()
