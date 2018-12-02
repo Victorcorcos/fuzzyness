@@ -85,12 +85,12 @@ area_center <- function () {
 # The output is the value after the defuzification!
 
 inference <- function (test_sample) {
-  #  => c(8, -2)
+  # Example of test_sample => c(8, -2)
   rule_precendents = precedent_matrix()
   rule_consequent  = consequent_vector()
   global$rule_inferences = c()
 
-  # global$test_data # All inputs that I need to test
+  # global$test_data # All inputs needed to test
   for(row in 1:nrow(rule_precendents)) {
     for(col in 1:ncol(rule_precendents)) {
       input = test_sample[col] # 20
@@ -137,16 +137,6 @@ consequent_vector <- function () {
   global$rules[,ncol(global$rules)]
 }
 
-# my_match <- function (element, vector) {
-#   for(i in 1:length(vector)) {
-#     print(i)
-#     if (vector[i] == element) {
-#       return(i)
-#     }
-#   }
-#   return(0)
-# }
-
 get_membership_value <- function (value, set, domain) {
   index = match(value, domain)
   return(set[index])
@@ -170,22 +160,6 @@ generate_rules <- function () {
 
         current_sets = append(current_sets, c(linguistic_sets[i]))
         mf = get_membership_value(global$training_data[row, col], constantize(linguistic_sets[i]), constantize(linguistic_domain))
-
-        # print('Value:')
-        # print(global$training_data[row, col])
-        # print('Row:')
-        # print(row)
-        # print('Col:')
-        # print(col)
-        # print('Linguistic Set:')
-        # print(linguistic_sets[i])
-        # print('Linguistic Domain:')
-        # print(linguistic_domain)
-        # print('Fucking MF:')
-        # print(mf)
-
-        # print(paste('Mf values:', mf))
-
         current_mf_values = append(current_mf_values, mf)
       }
 
@@ -424,10 +398,6 @@ print_aggregation <- function () {
   plot(global$aggregated, ylim = c(0, 1), type = 'l', col = get_color(sample(1:8, 1)), xlim = c(min(domain), max(domain)), main = 'Agregacao', xlab = '', ylab = '')
 }
 
-print_accuracy <- function () {
-
-}
-
 # ============ Make inference based on norms, def and imp ===============
 
 global = new.env()
@@ -456,7 +426,7 @@ for(col in 1:ncol(global$dataset)) {
   precision = 1
   assign(domain, seq(minimum, maximum, precision))
 
-  # Creating Fuzzy Sets dynamically (The complicated part)
+  # Creating Fuzzy Sets dynamically (The complex part)
   linguistic_terms = c(domain)
   set_names = get_set_names()
 
@@ -518,6 +488,10 @@ for(col in 1:ncol(global$dataset)) {
 }
 
 
+# Above we have the dynamic method to create Fuzzy Sets and distribute them in the domain
+# Below we have some example of simple creations of Fuzzy Sets. (In comments)
+
+
 # # Rule Input 1 (Vendas)
 # V_domain = seq(-100, 100, domain_precision)
 # V_Diminuindo = sapply(V_domain, trapezoidal, a = -100, m = -100, n = -50, b = 0)
@@ -532,8 +506,6 @@ for(col in 1:ncol(global$dataset)) {
 # S_Alta = sapply(S_domain, triangular,  a = 50, m = 100, b = 100)
 # add_linguistic_variable('Servicos', c('S_domain', 'S_Baixo', 'S_Media', 'S_Alta'))
 
-# # Can be more!!
-
 
 # # Rule Output (Recomendacao)
 # R_domain = seq(0, 100, domain_precision)
@@ -542,9 +514,9 @@ for(col in 1:ncol(global$dataset)) {
 # R_Forte = sapply(R_domain, triangular, a = 50, m = 100, b = 100)
 # add_linguistic_variable('Recomendacao', c('R_domain', 'R_Leve', 'R_Media', 'R_Forte'))
 
-create_training_and_test(0.8) # 80% for training
+create_training_and_test(0.8) # 80% for training (Wang & Mendel), 20% for test (Inference and Accuracy measurement)
 
-generate_rules() # Wang & Mendel by the training samples
+generate_rules() # Runs Wang & Mendel by the training samples
 
 tnorms = c('minimo', 'produto', 'diferenca_limitada', 'interseccao_drastica')
 snorms = c('maximo', 'soma_algebrica', 'soma_limitada', 'uniao_drastica')
@@ -574,61 +546,3 @@ for (tnorm in tnorms) {
 sort_accuracies()
 
 print(global$accuracies) # Print the accuracies (tnorm, snorm, implication and defuzification)
-
-
-### Hints
-
-# > as.character(substitute(minimo))
-# [1] "minimo"
-
-# Todas as tnormas, snormas, implicacoes e defuzificacoes
-#
-# tnorms = c('minimo', 'produto', 'diferenca_limitada', 'interseccao_drastica')
-# snorms = c('maximo', 'soma_algebrica', 'soma_limitada', 'uniao_drastica')
-# implications = c('mamdani', 'larsen', 'lukasiewics', 'kleene', 'reichenbach', 'zadeh', 'gaines', 'godel', 'goguen', 'kliryuan')
-# defuzifications = c('maximum_center', 'area_center')
-
-
-# * Create a rule matrix
-# rule_domains <- matrix(c(10, 20, 30), ncol = 3, dimnames = list(c('Rules'), c('InputA', 'InputB', 'Output')))
-# rule_labels  <- matrix(c('A_Baixo', 'B_Medio', 'O_Alto'), ncol = 3, dimnames = list(c('Rules'), c('InputA', 'InputB', 'Output')))
-# rule_values  <- matrix(c(0.2, 0.23, 0.1), ncol = 3, dimnames = list(c('Rules'), c('InputA', 'InputB', 'Output')))
-# rules
-# Define uma função que dado uma entrada, cria uma row pra regra daquela entrada (Atualizando as 3 variaveis)
-# Define uma função que deleta uma regra (Pelo numero) e deleta todos esses valores dessas variaveis auxiliares
-
-# * Add column with its label
-# 
-
-# * Access elements
-# => rule_values[1, c('Output')]
-
-# * Access an row
-# => rule_values[2,]
-
-# * Remove the output column
-# => rule_values[,-ncol(rule_values)]
-
-# * Discover the Fuzzy Set
-# rule_line[match(max(rule_line_values), rule_line_values)]
-
-# * Access column names
-# => colnames(rule_values)
-
-# * Add row
-# => rule_values = rbind(rule_values, c(4, 5, 6))
-
-# * Delete rows
-# => rule_values = rule_values[-2,]
-# => rule_values = rule_values[c(-2:-6),]
-
-# * Converting List
-# do.call(rbind, list(1, 2)) # Matrix
-# unlist(list(1, 2))         # Vector
-
-
-# * List current variables
-# ls()
-
-# * List global variables
-# ls(global)
