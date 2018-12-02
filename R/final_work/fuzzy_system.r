@@ -392,7 +392,7 @@ print_aggregation <- function () {
 
   domain = consequent_domain()
   for(col in 1:ncol(global$rule_inferences)) {
-    plot(global$rule_inferences[,col], ylim = c(0, 1), type = 'l', col = get_color(col), xlim = c(min(domain), max(domain)),  main = paste('Regra', col),   xlab = '', ylab = '')
+    plot(global$rule_inferences[,col], ylim = c(0, 1), type = 'l', col = get_color(col), xlim = c(min(domain), max(domain)),  main = paste('Regra Ativada', col),   xlab = '', ylab = '')
   }
   plot(global$aggregated, ylim = c(0, 1), type = 'l', col = get_color(sample(1:8, 1)), xlim = c(min(domain), max(domain)), main = 'Agregacao', xlab = '', ylab = '')
 }
