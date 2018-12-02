@@ -398,7 +398,7 @@ print_aggregation <- function () {
   plot(global$aggregated, ylim = c(0, 1), type = 'l', col = get_color(sample(1:8, 1)), xlim = c(min(domain), max(domain)), main = 'Agregacao', xlab = '', ylab = '')
 }
 
-# ============ Make inference based on norms, def and imp ===============
+# ============ Here starts the code after executing source() or reload() ===============
 
 global = new.env()
 
@@ -409,11 +409,6 @@ global$fuzzy_sets_function = 'triangular'
 global$linguistic_variable_sets = c()
 
 initialize_dataset()
-# ...Exemplo...
-# Vendas Servicos Recomendacao
-#     10       20          100
-#   -100       30            0
-#    -10       30           50
 
 # Assign Attribute_Domain and Attribute_FuzzySets to an Attribute
 for(col in 1:ncol(global$dataset)) {
