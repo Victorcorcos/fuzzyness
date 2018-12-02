@@ -85,12 +85,12 @@ area_center <- function () {
 # The output is the value after the defuzification!
 
 inference <- function (test_sample) {
-  #  => c(8, -2)
+  # Example of test_sample => c(8, -2)
   rule_precendents = precedent_matrix()
   rule_consequent  = consequent_vector()
   global$rule_inferences = c()
 
-  # global$test_data # All inputs that I need to test
+  # global$test_data # All inputs needed to test
   for(row in 1:nrow(rule_precendents)) {
     for(col in 1:ncol(rule_precendents)) {
       input = test_sample[col] # 20
@@ -137,16 +137,6 @@ consequent_vector <- function () {
   global$rules[,ncol(global$rules)]
 }
 
-# my_match <- function (element, vector) {
-#   for(i in 1:length(vector)) {
-#     print(i)
-#     if (vector[i] == element) {
-#       return(i)
-#     }
-#   }
-#   return(0)
-# }
-
 get_membership_value <- function (value, set, domain) {
   index = match(value, domain)
   return(set[index])
@@ -170,22 +160,6 @@ generate_rules <- function () {
 
         current_sets = append(current_sets, c(linguistic_sets[i]))
         mf = get_membership_value(global$training_data[row, col], constantize(linguistic_sets[i]), constantize(linguistic_domain))
-
-        # print('Value:')
-        # print(global$training_data[row, col])
-        # print('Row:')
-        # print(row)
-        # print('Col:')
-        # print(col)
-        # print('Linguistic Set:')
-        # print(linguistic_sets[i])
-        # print('Linguistic Domain:')
-        # print(linguistic_domain)
-        # print('Fucking MF:')
-        # print(mf)
-
-        # print(paste('Mf values:', mf))
-
         current_mf_values = append(current_mf_values, mf)
       }
 
@@ -424,26 +398,17 @@ print_aggregation <- function () {
   plot(global$aggregated, ylim = c(0, 1), type = 'l', col = get_color(sample(1:8, 1)), xlim = c(min(domain), max(domain)), main = 'Agregacao', xlab = '', ylab = '')
 }
 
-print_accuracy <- function () {
-
-}
-
-# ============ Make inference based on norms, def and imp ===============
+# ============ Here starts the code after executing source() or reload() ===============
 
 global = new.env()
 
 global$max_granularity = 13
-global$fuzzy_sets_quantity = 3
+global$fuzzy_sets_quantity = 7
 global$fuzzy_sets_function = 'triangular'
 
 global$linguistic_variable_sets = c()
 
 initialize_dataset()
-# ...Exemplo...
-# Vendas Servicos Recomendacao
-#     10       20          100
-#   -100       30            0
-#    -10       30           50
 
 # Assign Attribute_Domain and Attribute_FuzzySets to an Attribute
 for(col in 1:ncol(global$dataset)) {
@@ -456,14 +421,14 @@ for(col in 1:ncol(global$dataset)) {
   precision = 1
   assign(domain, seq(minimum, maximum, precision))
 
-  # Creating sets vector to add linguistic terms
+  # Creating Fuzzy Sets dynamically (The complex part)
   linguistic_terms = c(domain)
-
-  # Creating Fuzzy Sets
   set_names = get_set_names()
 
-  if (global$fuzzy_sets_function == 'triangular') {
-    step = (maximum - minimum) / (length(set_names)-1)
+  if (global$fuzzy_sets_function == 'triangular' || global$fuzzy_sets_function == 'gaussian') {
+    step = (maximum - minimum) / (length(set_names) - 1)
+  } else if (global$fuzzy_sets_function == 'trapezoidal') {
+    step = (maximum - minimum) / ((length(set_names)*2) - 1)
   }
 
   set_limit = minimum
@@ -478,25 +443,48 @@ for(col in 1:ncol(global$dataset)) {
       if (set_i == 1) {
         set_values = sapply(domain_var, mf_function, a = minimum, m = minimum, b = minimum + step)
         assign(attribute_set, set_values)
-
       } else if (set_i == length(set_names)) {
         set_values = sapply(domain_var, mf_function, a = maximum - step, m = maximum, b = maximum)
         assign(attribute_set, set_values)
       } else {
-        # Caos aqui!
         set_limit = set_limit + step
         set_values = sapply(domain_var, mf_function, a = set_limit - step, m = set_limit, b = set_limit + step)
         assign(attribute_set, set_values)
       }
     } else if (global$fuzzy_sets_function == 'trapezoidal') {
-      print('Need this')
+      if (set_i == 1) {
+        set_values = sapply(domain_var, mf_function, a = minimum, m = minimum, n = minimum + step, b = minimum + 2*step)
+        assign(attribute_set, set_values)
+      } else if (set_i == length(set_names)) {
+        set_values = sapply(domain_var, mf_function, a = maximum - 2*step, m = maximum - step, n = maximum, b = maximum)
+        assign(attribute_set, set_values)
+      } else {
+        set_limit = set_limit + 2*step
+        set_values = sapply(domain_var, mf_function, a = set_limit - step, m = set_limit, n = set_limit + step, b = set_limit + 2*step)
+        assign(attribute_set, set_values)
+      }
     } else if (global$fuzzy_sets_function == 'gaussian') {
-      print('Need this')
+      sigma = (step/length(set_names)) * 2
+      if (set_i == 1) {
+        set_values = sapply(domain_var, mf_function, m = minimum, o = sigma)
+        assign(attribute_set, set_values)
+      } else if (set_i == length(set_names)) {
+        set_values = sapply(domain_var, mf_function, m = maximum, o = sigma)
+        assign(attribute_set, set_values)
+      } else {
+        set_limit = set_limit + step
+        set_values = sapply(domain_var, mf_function, m = set_limit, o = sigma)
+        assign(attribute_set, set_values)
+      }
     }
   }
 
   add_linguistic_variable(attribute, linguistic_terms)
 }
+
+
+# Above we have the dynamic method to create Fuzzy Sets and distribute them in the domain
+# Below we have some example of simple creations of Fuzzy Sets. (In comments)
 
 
 # # Rule Input 1 (Vendas)
@@ -513,8 +501,6 @@ for(col in 1:ncol(global$dataset)) {
 # S_Alta = sapply(S_domain, triangular,  a = 50, m = 100, b = 100)
 # add_linguistic_variable('Servicos', c('S_domain', 'S_Baixo', 'S_Media', 'S_Alta'))
 
-# # Can be more!!
-
 
 # # Rule Output (Recomendacao)
 # R_domain = seq(0, 100, domain_precision)
@@ -523,9 +509,9 @@ for(col in 1:ncol(global$dataset)) {
 # R_Forte = sapply(R_domain, triangular, a = 50, m = 100, b = 100)
 # add_linguistic_variable('Recomendacao', c('R_domain', 'R_Leve', 'R_Media', 'R_Forte'))
 
-create_training_and_test(0.8) # 80% for training
+create_training_and_test(0.8) # 80% for training (Wang & Mendel), 20% for test (Inference and Accuracy measurement)
 
-generate_rules() # Wang & Mendel by the training samples
+generate_rules() # Runs Wang & Mendel by the training samples
 
 tnorms = c('minimo', 'produto', 'diferenca_limitada', 'interseccao_drastica')
 snorms = c('maximo', 'soma_algebrica', 'soma_limitada', 'uniao_drastica')
@@ -555,61 +541,3 @@ for (tnorm in tnorms) {
 sort_accuracies()
 
 print(global$accuracies) # Print the accuracies (tnorm, snorm, implication and defuzification)
-
-
-### Hints
-
-# > as.character(substitute(minimo))
-# [1] "minimo"
-
-# Todas as tnormas, snormas, implicacoes e defuzificacoes
-#
-# tnorms = c('minimo', 'produto', 'diferenca_limitada', 'interseccao_drastica')
-# snorms = c('maximo', 'soma_algebrica', 'soma_limitada', 'uniao_drastica')
-# implications = c('mamdani', 'larsen', 'lukasiewics', 'kleene', 'reichenbach', 'zadeh', 'gaines', 'godel', 'goguen', 'kliryuan')
-# defuzifications = c('maximum_center', 'area_center')
-
-
-# * Create a rule matrix
-# rule_domains <- matrix(c(10, 20, 30), ncol = 3, dimnames = list(c('Rules'), c('InputA', 'InputB', 'Output')))
-# rule_labels  <- matrix(c('A_Baixo', 'B_Medio', 'O_Alto'), ncol = 3, dimnames = list(c('Rules'), c('InputA', 'InputB', 'Output')))
-# rule_values  <- matrix(c(0.2, 0.23, 0.1), ncol = 3, dimnames = list(c('Rules'), c('InputA', 'InputB', 'Output')))
-# rules
-# Define uma função que dado uma entrada, cria uma row pra regra daquela entrada (Atualizando as 3 variaveis)
-# Define uma função que deleta uma regra (Pelo numero) e deleta todos esses valores dessas variaveis auxiliares
-
-# * Add column with its label
-# 
-
-# * Access elements
-# => rule_values[1, c('Output')]
-
-# * Access an row
-# => rule_values[2,]
-
-# * Remove the output column
-# => rule_values[,-ncol(rule_values)]
-
-# * Discover the Fuzzy Set
-# rule_line[match(max(rule_line_values), rule_line_values)]
-
-# * Access column names
-# => colnames(rule_values)
-
-# * Add row
-# => rule_values = rbind(rule_values, c(4, 5, 6))
-
-# * Delete rows
-# => rule_values = rule_values[-2,]
-# => rule_values = rule_values[c(-2:-6),]
-
-# * Converting List
-# do.call(rbind, list(1, 2)) # Matrix
-# unlist(list(1, 2))         # Vector
-
-
-# * List current variables
-# ls()
-
-# * List global variables
-# ls(global)
