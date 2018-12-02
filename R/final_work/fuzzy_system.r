@@ -26,6 +26,24 @@ godel <- function (x, y) { if (x <= y) return(1) else return(y) }
 goguen <- function (x, y) { if (x <= y) return(1) else return(y/x) }
 kliryuan <- function (x, y) { 1 - x + x^2 * y }
 
+# =============== Defuzzification Methods =============== #
+maximum_center <- function () {
+  max_value = max(global$aggregated)
+  max_indexes = which(global$aggregated %in% c(max_value))
+  first_index = max_indexes[1]
+  last_index = tail(max_indexes, n = 1)
+
+  consequent_domain = consequent_domain()
+  first = consequent_domain[first_index]
+  last = consequent_domain[last_index]
+  return((first + last)/2)
+}
+
+area_center <- function () {
+  if (sum(global$aggregated) == 0) return(0)
+  consequent_domain = consequent_domain()
+  sum(mapply(produto, global$aggregated, consequent_domain)) / sum(global$aggregated)
+}
 
 # =============== Membership Functions ===============
 triangular <- function (x, a, m, b) {
@@ -58,25 +76,6 @@ trapezoidal <- function (x, a, m, n, b) {
 
 gaussian <- function (x, m, o) { # m = 2, o = 30
   exp(-((x - m)^2)/(o^2))
-}
-
-# =============== Defuzzification Methods =============== #
-maximum_center <- function () {
-  max_value = max(global$aggregated)
-  max_indexes = which(global$aggregated %in% c(max_value))
-  first_index = max_indexes[1]
-  last_index = tail(max_indexes, n = 1)
-
-  consequent_domain = consequent_domain()
-  first = consequent_domain[first_index]
-  last = consequent_domain[last_index]
-  return((first + last)/2)
-}
-
-area_center <- function () {
-  if (sum(global$aggregated) == 0) return(0)
-  consequent_domain = consequent_domain()
-  sum(mapply(produto, global$aggregated, consequent_domain)) / sum(global$aggregated)
 }
 
 # =============== Inference Engine =============== #
@@ -403,7 +402,7 @@ print_aggregation <- function () {
 global = new.env()
 
 global$max_granularity = 13
-global$fuzzy_sets_quantity = 7
+global$fuzzy_sets_quantity = 9
 global$fuzzy_sets_function = 'triangular'
 
 global$linguistic_variable_sets = c()
