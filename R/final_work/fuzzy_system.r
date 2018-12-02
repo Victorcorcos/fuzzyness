@@ -433,7 +433,7 @@ print_accuracy <- function () {
 global = new.env()
 
 global$max_granularity = 13
-global$fuzzy_sets_quantity = 3
+global$fuzzy_sets_quantity = 7
 global$fuzzy_sets_function = 'triangular'
 
 global$linguistic_variable_sets = c()
@@ -456,14 +456,14 @@ for(col in 1:ncol(global$dataset)) {
   precision = 1
   assign(domain, seq(minimum, maximum, precision))
 
-  # Creating sets vector to add linguistic terms
+  # Creating Fuzzy Sets dynamically (The complicated part)
   linguistic_terms = c(domain)
-
-  # Creating Fuzzy Sets
   set_names = get_set_names()
 
-  if (global$fuzzy_sets_function == 'triangular') {
-    step = (maximum - minimum) / (length(set_names)-1)
+  if (global$fuzzy_sets_function == 'triangular' || global$fuzzy_sets_function == 'gaussian') {
+    step = (maximum - minimum) / (length(set_names) - 1)
+  } else if (global$fuzzy_sets_function == 'trapezoidal') {
+    step = (maximum - minimum) / ((length(set_names)*2) - 1)
   }
 
   set_limit = minimum
@@ -478,20 +478,39 @@ for(col in 1:ncol(global$dataset)) {
       if (set_i == 1) {
         set_values = sapply(domain_var, mf_function, a = minimum, m = minimum, b = minimum + step)
         assign(attribute_set, set_values)
-
       } else if (set_i == length(set_names)) {
         set_values = sapply(domain_var, mf_function, a = maximum - step, m = maximum, b = maximum)
         assign(attribute_set, set_values)
       } else {
-        # Caos aqui!
         set_limit = set_limit + step
         set_values = sapply(domain_var, mf_function, a = set_limit - step, m = set_limit, b = set_limit + step)
         assign(attribute_set, set_values)
       }
     } else if (global$fuzzy_sets_function == 'trapezoidal') {
-      print('Need this')
+      if (set_i == 1) {
+        set_values = sapply(domain_var, mf_function, a = minimum, m = minimum, n = minimum + step, b = minimum + 2*step)
+        assign(attribute_set, set_values)
+      } else if (set_i == length(set_names)) {
+        set_values = sapply(domain_var, mf_function, a = maximum - 2*step, m = maximum - step, n = maximum, b = maximum)
+        assign(attribute_set, set_values)
+      } else {
+        set_limit = set_limit + 2*step
+        set_values = sapply(domain_var, mf_function, a = set_limit - step, m = set_limit, n = set_limit + step, b = set_limit + 2*step)
+        assign(attribute_set, set_values)
+      }
     } else if (global$fuzzy_sets_function == 'gaussian') {
-      print('Need this')
+      sigma = (step/length(set_names)) * 2
+      if (set_i == 1) {
+        set_values = sapply(domain_var, mf_function, m = minimum, o = sigma)
+        assign(attribute_set, set_values)
+      } else if (set_i == length(set_names)) {
+        set_values = sapply(domain_var, mf_function, m = maximum, o = sigma)
+        assign(attribute_set, set_values)
+      } else {
+        set_limit = set_limit + step
+        set_values = sapply(domain_var, mf_function, m = set_limit, o = sigma)
+        assign(attribute_set, set_values)
+      }
     }
   }
 
