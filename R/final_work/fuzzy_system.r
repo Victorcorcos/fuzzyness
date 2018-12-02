@@ -28,7 +28,7 @@ kliryuan <- function (x, y) { 1 - x + x^2 * y }
 
 
 # =============== Membership Functions ===============
-triangular_membership_function <- function (x, a, m, b) {
+triangular <- function (x, a, m, b) {
   if (x == m && m == b) {
     y = 1
   } else if (x >= a && x < m) {
@@ -41,7 +41,7 @@ triangular_membership_function <- function (x, a, m, b) {
   y
 }
 
-trapezoidal_membership_function <- function (x, a, m, n, b) {
+trapezoidal <- function (x, a, m, n, b) {
   if (x == n && n == b) {
     y = 1
   } else if (x >= a && x < m) {
@@ -56,7 +56,7 @@ trapezoidal_membership_function <- function (x, a, m, n, b) {
   y
 }
 
-gaussian_membership_function <- function (x, m, o) { # m = 2, o = 30
+gaussian <- function (x, m, o) { # m = 2, o = 30
   exp(-((x - m)^2)/(o^2))
 }
 
@@ -74,6 +74,7 @@ maximum_center <- function () {
 }
 
 area_center <- function () {
+  if (sum(global$aggregated) == 0) return(0)
   consequent_domain = consequent_domain()
   sum(mapply(produto, global$aggregated, consequent_domain)) / sum(global$aggregated)
 }
@@ -81,9 +82,10 @@ area_center <- function () {
 # =============== Inference Engine =============== #
 
 # Makes the whole inference process by a provided test sample
-# The output is the value after the defuzification!!!
+# The output is the value after the defuzification!
+
 inference <- function (test_sample) {
-  #  => c(-10, 30, 50)
+  #  => c(8, -2)
   rule_precendents = precedent_matrix()
   rule_consequent  = consequent_vector()
   global$rule_inferences = c()
@@ -135,8 +137,18 @@ consequent_vector <- function () {
   global$rules[,ncol(global$rules)]
 }
 
+# my_match <- function (element, vector) {
+#   for(i in 1:length(vector)) {
+#     print(i)
+#     if (vector[i] == element) {
+#       return(i)
+#     }
+#   }
+#   return(0)
+# }
+
 get_membership_value <- function (value, set, domain) {
-  index = match(c(value), domain)
+  index = match(value, domain)
   return(set[index])
 }
 
@@ -155,8 +167,25 @@ generate_rules <- function () {
       current_mf_values = c()
 
       for(i in 1:length(linguistic_sets)) {
+
         current_sets = append(current_sets, c(linguistic_sets[i]))
         mf = get_membership_value(global$training_data[row, col], constantize(linguistic_sets[i]), constantize(linguistic_domain))
+
+        # print('Value:')
+        # print(global$training_data[row, col])
+        # print('Row:')
+        # print(row)
+        # print('Col:')
+        # print(col)
+        # print('Linguistic Set:')
+        # print(linguistic_sets[i])
+        # print('Linguistic Domain:')
+        # print(linguistic_domain)
+        # print('Fucking MF:')
+        # print(mf)
+
+        # print(paste('Mf values:', mf))
+
         current_mf_values = append(current_mf_values, mf)
       }
 
@@ -166,6 +195,7 @@ generate_rules <- function () {
       rule_line_values = append(rule_line_values, max_membership_value)
       rule_line_sets = append(rule_line_sets, max_fuzzy_set)
     }
+
     add_rule_by_strength(rule_line_values, rule_line_sets)
 
     rule_line_values = c()
@@ -216,12 +246,6 @@ remove_rule <- function (rule_row) {
 }
 
 initialize_dataset <- function () {
-  # === Old Version ===
-  # Vendas Servicos Recomendacao
-  #     10       20          100
-  #   -100       30            0
-  #    -10       30           50
-
   # === Expected dataset entry (example) ===
   # Speed, Angle, Power
   # 1, -5, 0.3
@@ -240,13 +264,11 @@ initialize_dataset <- function () {
   # 8, 2, 0.3
   # 9, 0, 0.5
 
-  dataset <- read.csv('container_crane.csv', sep=',')
-  dataset_matrix <- as.matrix(temp)
+  dataset <- read.csv('/Users/victor/Desktop/Fuzzy/R/final_work/qualidade_da_agua_bahia.csv', sep=',')
+  dataset_matrix <- as.matrix(dataset)
+  global$dataset = dataset_matrix
 
-  entries = c(10, 20, 100, -100, 30, 0, -10, 30, 50)
-  labels = colnames(global$linguistic_variable_sets)
-  global$dataset = create_matrix(entries, labels)
-
+  labels = colnames(global$dataset)
   global$rules_values = create_blank_matrix(labels)
   global$rules = create_blank_matrix(labels)
 }
@@ -286,8 +308,8 @@ measure_accuracy <- function () {
   observeds = global$test_data[,ncol(global$test_data)]
   forecasteds = c()
 
-  for(test in 1:nrow(global$test_data)) {
-    forecasted = inference(global$test_data[,-ncol(global$test_data)])
+  for(row in 1:nrow(global$test_data)) {
+    forecasted = inference(global$test_data[,-ncol(global$test_data)][row,])
     forecasteds = append(forecasteds, forecasted)
   }
 
@@ -361,6 +383,18 @@ sort_accuracies <- function () {
   global$accuracies = global$accuracies[order(global$accuracies[,1], decreasing=FALSE),]
 }
 
+get_set_names <- function () {
+  if (global$fuzzy_sets_quantity == 3) {
+    return(c('Pouco', 'Medio', 'Muito'))
+  } else if (global$fuzzy_sets_quantity == 5) {
+    return(c('MuitoPouco', 'Pouco', 'Medio', 'Muito', 'Muitissimo'))
+  } else if (global$fuzzy_sets_quantity == 7) {
+    return(c('ExtremamentePouco', 'MuitoPouco', 'Pouco', 'Medio', 'Muito', 'Muitissimo', 'ExtremamenteMuito'))
+  } else if (global$fuzzy_sets_quantity == 9) {
+    return(c('QuaseNada', 'ExtremamentePouco', 'MuitoPouco', 'Pouco', 'Medio', 'Muito', 'Muitissimo', 'ExtremamenteMuito', 'Completamente'))
+  }
+}
+
 # =============== Print functions =============== #
 print_fuzzy_sets <- function () {
   par(mfrow = c(3,3), mar = c(5, 3, 2, 2)+0.01)
@@ -376,7 +410,7 @@ print_fuzzy_sets <- function () {
        lines(domain, constantize(fuzzy_sets[index]), type = 'l', col = get_color(index), xlim = c(min(domain), max(domain)))
       }
     }
-    legend('left', cex = 0.5, title = 'Linguistic Terms', fuzzy_sets)
+    legend('left', cex = 0.5, title = 'Conjuntos Fuzzy', fuzzy_sets)
   }
 }
 
@@ -394,55 +428,104 @@ print_accuracy <- function () {
 
 }
 
-# ====================== Create the Fuzzy System =========================
-
-train <- function () {
-  global$linguistic_variable_sets = c()
-  global$max_granularity = 13
-  domain_precision = 1.0
-
-
-  # Rule Input 1 (Vendas)
-  V_domain = seq(-100, 100, domain_precision)
-  V_Diminuindo = sapply(V_domain, trapezoidal_membership_function, a = -100, m = -100, n = -50, b = 0)
-  V_Estavel = sapply(V_domain, triangular_membership_function,     a = -50,  m = 0,    b = 50)
-  V_Aumentando = sapply(V_domain, trapezoidal_membership_function, a = 0,    m = 50,   n = 100, b = 100)
-  add_linguistic_variable('Vendas', c('V_domain', 'V_Diminuindo', 'V_Estavel', 'V_Aumentando'))
-
-  # Rule Input 2 (Servicos)
-  S_domain = seq(0, 100, domain_precision)
-  S_Baixo = sapply(S_domain, triangular_membership_function, a = 0,  m = 0,   b = 50)
-  S_Media = sapply(S_domain, triangular_membership_function, a = 0,  m = 50,  b = 100)
-  S_Alta = sapply(S_domain, triangular_membership_function,  a = 50, m = 100, b = 100)
-  add_linguistic_variable('Servicos', c('S_domain', 'S_Baixo', 'S_Media', 'S_Alta'))
-
-  # Can be more!!
-
-
-  # Rule Output (Recomendacao)
-  R_domain = seq(0, 100, domain_precision)
-  R_Leve = sapply(R_domain, triangular_membership_function,  a = 0,  m = 0,   b = 50)
-  R_Media = sapply(R_domain, triangular_membership_function, a = 0,  m = 50,  b = 100)
-  R_Forte = sapply(R_domain, triangular_membership_function, a = 50, m = 100, b = 100)
-  add_linguistic_variable('Recomendacao', c('R_domain', 'R_Leve', 'R_Media', 'R_Forte'))
-
-  initialize_dataset()
-  # ...Exemplo...
-  # Vendas Servicos Recomendacao
-  #     10       20          100
-  #   -100       30            0
-  #    -10       30           50
-
-  create_training_and_test(0.8) # 80% for training
-
-  generate_rules() # Wang & Mendel by the training samples
-}
-
 # ============ Make inference based on norms, def and imp ===============
 
 global = new.env()
 
-train() # Train data by Wang & Mendel
+global$max_granularity = 13
+global$fuzzy_sets_quantity = 3
+global$fuzzy_sets_function = 'triangular'
+
+global$linguistic_variable_sets = c()
+
+initialize_dataset()
+# ...Exemplo...
+# Vendas Servicos Recomendacao
+#     10       20          100
+#   -100       30            0
+#    -10       30           50
+
+# Assign Attribute_Domain and Attribute_FuzzySets to an Attribute
+for(col in 1:ncol(global$dataset)) {
+  attribute = colnames(global$dataset)[col]
+  minimum = min(global$dataset[,col])
+  maximum = max(global$dataset[,col])
+
+  # Creating domain
+  domain = paste(attribute, '_Domain', sep='')
+  precision = 1
+  assign(domain, seq(minimum, maximum, precision))
+
+  # Creating sets vector to add linguistic terms
+  linguistic_terms = c(domain)
+
+  # Creating Fuzzy Sets
+  set_names = get_set_names()
+
+  if (global$fuzzy_sets_function == 'triangular') {
+    step = (maximum - minimum) / (length(set_names)-1)
+  }
+
+  set_limit = minimum
+
+  for(set_i in 1:length(set_names)) {
+    mf_function = constantize(global$fuzzy_sets_function)
+    attribute_set = paste(attribute, set_names[set_i], sep='_')
+    domain_var = constantize(domain)
+    linguistic_terms = append(linguistic_terms, attribute_set)
+
+    if(global$fuzzy_sets_function == 'triangular') {
+      if (set_i == 1) {
+        set_values = sapply(domain_var, mf_function, a = minimum, m = minimum, b = minimum + step)
+        assign(attribute_set, set_values)
+
+      } else if (set_i == length(set_names)) {
+        set_values = sapply(domain_var, mf_function, a = maximum - step, m = maximum, b = maximum)
+        assign(attribute_set, set_values)
+      } else {
+        # Caos aqui!
+        set_limit = set_limit + step
+        set_values = sapply(domain_var, mf_function, a = set_limit - step, m = set_limit, b = set_limit + step)
+        assign(attribute_set, set_values)
+      }
+    } else if (global$fuzzy_sets_function == 'trapezoidal') {
+      print('Need this')
+    } else if (global$fuzzy_sets_function == 'gaussian') {
+      print('Need this')
+    }
+  }
+
+  add_linguistic_variable(attribute, linguistic_terms)
+}
+
+
+# # Rule Input 1 (Vendas)
+# V_domain = seq(-100, 100, domain_precision)
+# V_Diminuindo = sapply(V_domain, trapezoidal, a = -100, m = -100, n = -50, b = 0)
+# V_Estavel = sapply(V_domain, triangular,     a = -50,  m = 0,    b = 50)
+# V_Aumentando = sapply(V_domain, trapezoidal, a = 0,    m = 50,   n = 100, b = 100)
+# add_linguistic_variable('Vendas', c('V_domain', 'V_Diminuindo', 'V_Estavel', 'V_Aumentando'))
+
+# # Rule Input 2 (Servicos)
+# S_domain = seq(0, 100, domain_precision)
+# S_Baixo = sapply(S_domain, triangular, a = 0,  m = 0,   b = 50)
+# S_Media = sapply(S_domain, triangular, a = 0,  m = 50,  b = 100)
+# S_Alta = sapply(S_domain, triangular,  a = 50, m = 100, b = 100)
+# add_linguistic_variable('Servicos', c('S_domain', 'S_Baixo', 'S_Media', 'S_Alta'))
+
+# # Can be more!!
+
+
+# # Rule Output (Recomendacao)
+# R_domain = seq(0, 100, domain_precision)
+# R_Leve = sapply(R_domain, triangular,  a = 0,  m = 0,   b = 50)
+# R_Media = sapply(R_domain, triangular, a = 0,  m = 50,  b = 100)
+# R_Forte = sapply(R_domain, triangular, a = 50, m = 100, b = 100)
+# add_linguistic_variable('Recomendacao', c('R_domain', 'R_Leve', 'R_Media', 'R_Forte'))
+
+create_training_and_test(0.8) # 80% for training
+
+generate_rules() # Wang & Mendel by the training samples
 
 tnorms = c('minimo', 'produto', 'diferenca_limitada', 'interseccao_drastica')
 snorms = c('maximo', 'soma_algebrica', 'soma_limitada', 'uniao_drastica')
@@ -451,17 +534,19 @@ defuzifications = c('maximum_center', 'area_center')
 
 global$accuracies = c()
 
+print('Generating results for...')
+
 for (tnorm in tnorms) {
   for (snorm in snorms) {
     for (implication in implications) {
       for (defuzification in defuzifications) {
         global$tnorm = constantize(tnorm)
-        global$implication = constantize(implication)
         global$snorm = constantize(snorm)
+        global$implication = constantize(implication)
         global$defuzification = constantize(defuzification)
         measure_accuracy() # Makes the inference for all test samples and calculate the accuracy
-
         add_new_accuracy(tnorm, snorm, implication, defuzification)
+        print(paste('T-norm: ', tnorm, 'S-norm: ', snorm, 'Implication: ', implication, 'Defuzification: ', defuzification))
       }
     }
   }
