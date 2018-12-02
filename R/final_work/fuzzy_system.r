@@ -426,6 +426,7 @@ train <- function () {
   R_Forte = sapply(R_domain, triangular_membership_function, a = 50, m = 100, b = 100)
   add_linguistic_variable('Recomendacao', c('R_domain', 'R_Leve', 'R_Media', 'R_Forte'))
 
+
   initialize_dataset()
   # ...Exemplo...
   # Vendas Servicos Recomendacao
