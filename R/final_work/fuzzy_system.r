@@ -108,11 +108,15 @@ inference <- function (test_sample) {
     if (row == 1) {
       # Use the implication method
       aggregated = sapply(output_set, global$implication, y = rule_strength)
-      global$rule_inferences = cbind(global$rule_inferences, aggregated)
+      if (max(aggregated) != 0) {
+        global$rule_inferences = cbind(global$rule_inferences, aggregated)
+      }
     } else {
       # Aggregate the inferences by the S-norm
       new_consequent = sapply(output_set, global$implication, y = rule_strength)
-      global$rule_inferences = cbind(global$rule_inferences, new_consequent)
+      if (max(new_consequent) != 0) {
+        global$rule_inferences = cbind(global$rule_inferences, new_consequent)
+      }
       aggregated = mapply(global$snorm, aggregated, new_consequent)
     }
   }
@@ -274,8 +278,6 @@ create_training_and_test <- function (training_percentage) {
 
 # =============== Accuracy Function =============== #
 
-library(FuzzyR) # Used just for accuracy measurement
-
 measure_accuracy <- function () {
   global$aggregated = c()
   observeds = global$test_data[,ncol(global$test_data)]
@@ -292,6 +294,7 @@ measure_accuracy <- function () {
 
 # forecasting: A vector of forecasting values produced by the Fuzzy System inference.
 # observed: A vector of observed values.
+library(FuzzyR) # Used just for accuracy measurement
 accuracy <- function (forecasting, observed) {
   fuzzyr.accuracy(forecasting, observed)
 }
@@ -402,8 +405,8 @@ print_aggregation <- function () {
 global = new.env()
 
 global$max_granularity = 13
-global$fuzzy_sets_quantity = 9
-global$fuzzy_sets_function = 'triangular'
+global$fuzzy_sets_quantity = 5
+global$fuzzy_sets_function = 'trapezoidal'
 
 global$linguistic_variable_sets = c()
 
