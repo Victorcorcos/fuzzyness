@@ -406,7 +406,7 @@ global = new.env()
 
 global$max_granularity = 13
 global$fuzzy_sets_quantity = 5
-global$fuzzy_sets_function = 'trapezoidal'
+global$fuzzy_sets_function = 'gaussian'
 
 global$linguistic_variable_sets = c()
 
