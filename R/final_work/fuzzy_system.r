@@ -423,7 +423,7 @@ for(col in 1:ncol(global$dataset)) {
   precision = 1
   assign(domain, seq(minimum, maximum, precision))
 
-  # Creating Fuzzy Sets dynamically (The complex part)
+  # Creating Fuzzy Sets dynamically (The complex part!)
   linguistic_terms = c(domain)
   set_names = get_set_names()
 
