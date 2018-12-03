@@ -278,8 +278,6 @@ create_training_and_test <- function (training_percentage) {
 
 # =============== Accuracy Function =============== #
 
-library(FuzzyR) # Used just for accuracy measurement
-
 measure_accuracy <- function () {
   global$aggregated = c()
   observeds = global$test_data[,ncol(global$test_data)]
@@ -296,6 +294,7 @@ measure_accuracy <- function () {
 
 # forecasting: A vector of forecasting values produced by the Fuzzy System inference.
 # observed: A vector of observed values.
+library(FuzzyR) # Used just for accuracy measurement
 accuracy <- function (forecasting, observed) {
   fuzzyr.accuracy(forecasting, observed)
 }
