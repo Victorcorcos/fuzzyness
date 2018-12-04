@@ -368,6 +368,8 @@ get_set_names <- function () {
     return(c('ExtremamentePouco', 'MuitoPouco', 'Pouco', 'Medio', 'Muito', 'Muitissimo', 'ExtremamenteMuito'))
   } else if (global$fuzzy_sets_quantity == 9) {
     return(c('QuaseNada', 'ExtremamentePouco', 'MuitoPouco', 'Pouco', 'Medio', 'Muito', 'Muitissimo', 'ExtremamenteMuito', 'Completamente'))
+  } else {
+    return(letters[1:global$fuzzy_sets_quantity])
   }
 }
 
